@@ -25,12 +25,74 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
 
 ![attribution](https://cloud.githubusercontent.com/assets/5991751/19056221/c9f9114c-897c-11e6-8107-eab4354ee990.png)
 
+*Attribution Models & Weights*
+<table>
+  <tr>
+    <th rowspan="4">sequence</th>
+    <th>activityId</th>
+    <th>9962776</th>
+    <th>5</th>
+    <th>493</th>
+    <th>7</th>
+  </tr>
+  <tr>
+    <td>ts (converted)</td>
+    <td>8/5/13</td>
+    <td>5/23/13</td>
+    <td>10/12/09</td>
+    <td>6/23/1978</td>
+  </tr>
+  <tr>
+    <td>attributionTouchSeq</td>
+    <td>4</td>
+    <td>3</td>
+    <td>2</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>attributionTimeSeq</td>
+    <td>1</td>
+    <td>2</td>
+    <td>3</td>
+    <td>4</td>
+  </tr>
+  <tr>
+    <td rowspan="4">attribution model</td>
+    <td>lastTouch</td>
+    <td>1.00</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>firstTouch</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1.00</td>
+  </tr>
+  <tr>
+    <td>linearTouch</td>
+    <td>0.25</td>
+    <td>0.25</td>
+    <td>0.25</td>
+    <td>0.25</td>
+  </tr>
+  <tr>
+    <td>expDecay</td>
+    <td>0.50</td>
+    <td>0.25</td>
+    <td>0.12</td>
+    <td>0.06</td>
+  </tr>
+</table>
+
 
 Part 2.
 Neo4j Marketing Recommendations
 
 
-*Table 1 OTUs Expression of Binary Instances i and j*
+*OTUs Expression of Binary Instances i and j*
 <table>
 <tr>
   <th>j \ i</th>
