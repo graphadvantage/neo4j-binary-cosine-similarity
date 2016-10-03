@@ -23,6 +23,9 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
 
+![attribution](https://cloud.githubusercontent.com/assets/5991751/19056221/c9f9114c-897c-11e6-8107-eab4354ee990.png)
+
+
 Part 2.
 Neo4j Marketing Recommendations
 
