@@ -50,3 +50,5 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
 
 Part 2.
 Neo4j Marketing Recommendations
+
+![neo4j-example-reco](https://cloud.githubusercontent.com/assets/5991751/19052701/a8a35e0e-896c-11e6-89b1-90e4fe480d15.png)
