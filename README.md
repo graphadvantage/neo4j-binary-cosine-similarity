@@ -22,12 +22,12 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
 
 <table>
 <tr>
-<td>a = *i • j*</td>
-<td>b = *i&#773; • j*</td>
+<td>a = <i>i • j</i></td>
+<td>b = <i>i&#773; • j</i></td>
 </tr>
 <tr>
-<td>c = *i • j&#773;*</td>
-<td>d = *i&#773; • j&#773;*</td>
+<td>c = <i>i • j&#773;<i></td>
+<td>d = <i>i&#773; • j&#773;</i></td>
 </tr>
 </table>
 
