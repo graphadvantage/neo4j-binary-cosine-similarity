@@ -22,19 +22,19 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
 
 <table>
 <tr>
-  <th>j\\i</th>
+  <th>j \ i</th>
   <th>1 (Presence)</th>
   <th>0 (Absence)</th>
   <th>Sum</th>
 </tr>
 <tr>
-  <td><strong>1 (Presence)</strong></td>
+  <th>1 (Presence)</th>
   <td>a = <i>i&nbsp;•&nbsp;j</i></td>
   <td>b = <i>i&#773;&nbsp;•&nbsp;j</i></td>
   <td>a+b</td>
 </tr>
 <tr>
-  <td><strong>0 (Absence)</strong></td>
+  <th>0 (Absence)</th>
   <td>c = <i>i&nbsp;•&nbsp;j&#773;<i></td>
   <td>d = <i>i&#773;&nbsp;•&nbsp;j&#773;</i></td>
   <td>c+d</td>
