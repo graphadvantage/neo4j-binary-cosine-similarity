@@ -19,7 +19,7 @@ https://support.google.com/analytics/answer/1662518?hl=en
 
 In Part 1. of this GraphGist I'll show you how we can leverage relationships to compute marketing attributions, using multiple simulataneous models - a formidable task for a typical SQL database, but very straightforward in Neo4j.  In Part 2, we'll use the marketing attribution models to provide personalized marketing recommendations for individuals who have not yet converted to a lead.
 
-
+*Table 1 OTUs Expression of Binary Instances i and j*
 <table>
 <tr>
   <th>j \ i</th>
@@ -39,13 +39,14 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
   <td>d = <i>i&#773;&nbsp;•&nbsp;j&#773;</i></td>
   <td>c+d</td>
 </tr>
+<tr>
+  <th>Sum</th>
+  <td>a+c</td>
+  <td>b+d</td>
+  <td>n=a+b+c+d</td>
+</tr>
 </table>
 
-Table 1 OTUs Expression of Binary Instances i and j
-j i 1 (Presence) 0 (Absence) Sum
-1 (Presence) a = i • j b = i • j a+b
-0 (Absence) c = i • j d = i • j c+d
-Sum a+c b+d n=a+b+c+d
 
 Part 2.
 Neo4j Marketing Recommendations
