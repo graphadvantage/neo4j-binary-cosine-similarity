@@ -28,7 +28,7 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
 *Attribution Models & Weights*
 <table>
   <tr>
-    <th rowspan="4">sequence</th>
+    <th></th>
     <th>activityId</th>
     <th>9962776</th>
     <th>5</th>
@@ -36,6 +36,7 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
     <th>7</th>
   </tr>
   <tr>
+    <td rowspan="3">sequence</td>
     <td>ts (converted)</td>
     <td>8/5/13</td>
     <td>5/23/13</td>
@@ -57,7 +58,7 @@ In Part 1. of this GraphGist I'll show you how we can leverage relationships to 
     <td>4</td>
   </tr>
   <tr>
-    <td rowspan="4">attribution model</td>
+    <td rowspan="4">attribution model and weights</td>
     <td>lastTouch</td>
     <td>1.00</td>
     <td>0</td>
