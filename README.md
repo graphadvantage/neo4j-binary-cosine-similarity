@@ -191,13 +191,17 @@ You'll get a result like this:
 
 Our (:Individual {firstName: Ibrahim}) has been [:TOUCHED] by at different times by four different (:Activity) nodes. And apparently, even once during the disco era...
 
-![andy-gibb-shadow-dancing-rso-3]https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=600&h=600
+![andy-gibb-shadow-dancing-rso-3](https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=600&h=600)
 
-1 1 SHADOW DANCING –•– Andy Gibb (RSO)
-2 3 BAKER STREET –•– Gerry Rafferty (United Artists)
-3 4 IT’S A HEARTACHE –•– Bonnie Tyler (RCA)
-4 2 YOU’RE THE ONE THAT I WANT –•– John Travolta and Olivia Newton-John (RSO)
-5 6 TAKE A CHANCE ON ME –•– Abba (Atlantic)
+#1 1 SHADOW DANCING –•– Andy Gibb (RSO)
+
+#2 3 BAKER STREET –•– Gerry Rafferty (United Artists)
+
+#3 4 IT’S A HEARTACHE –•– Bonnie Tyler (RCA)
+
+#4 2 YOU’RE THE ONE THAT I WANT –•– John Travolta and Olivia Newton-John (RSO)
+
+#5 6 TAKE A CHANCE ON ME –•– Abba (Atlantic)
 
 https://weeklytop40.wordpress.com/1978/06/24/us-top-40-singles-week-ending-24th-june-1978/
 
