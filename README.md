@@ -5,23 +5,43 @@
 
 ## Introduction
 
+In this GraphGist, we'll take a look at how to use Neo4j to make real-time marketing recommendations. Modern digital marketing produces a ton of data which can be quite unmanagable in traditional SQL databases. However with Neo4j we can leverage the power of the graph to efficiently organize and analyze complex relationships present in our marketing data.
+
+We are going to build a simple recommendation engine that has knowledge of what marketing activities are responsible for driving leads (using marketing attribution modeling) and what sequence of marketing activities are most likely to cause a specific individual to convert to a lead (using k- nearest neighbor and binary cosine similarity).
+
+In Part 1. of this GraphGist I'll show you how we can leverage relationships to compute marketing attributions, resulting in multiple simultaneous attribution models.
+
+In Part 2, we'll use the marketing attribution models and similarity measures to provide personalized marketing recommendations for individuals who have not yet converted to a lead.
+
 
 ##Part 1. Neo4j Marketing Attribution Modeling
 
 > "Half the money I spend on advertising is wasted; the trouble is I don't know which half." - John Wanamaker
 
-The main goal of marketing is to create demand - doing lots of messaging across different marketing channels, trying to convert individuals to leads. And when an individual does convert (perhaps by adding an item to a cart or filling out a form), the next question is -- which of the various marketing activities (an email, an ad, an event, a webinar, a website visit, a social share, etc) that touched the individual should get the credit?  This is known as marketing attribution - a hotly debated topic.  Marketing attribution is often modeled as a sequence of weighted touches, computed across for each individual.
+The main goal of marketing is to create demand - doing lots of targeted messaging across different marketing channels, trying to convert individuals from awareness to consideration, or more specifically converting to a lead. What constitutes a lead varies depending on the business - examples include: filling out a contact form, adding an item to a cart, registering for a webinar, walking into a showroom.
+
+And when an individual does convert to a lead, the next question is -- which of the various marketing activities (an email, an ad, an event, a webinar, a website visit, a social share, etc) that have touched the individual should get the credit?  
+
+This is the marketing attribution problem - often hotly debated, since every marketer would like to claim that it was their campaign that drove the conversion.  So how can we sort this out?
+
+Marketing attribution is modeled using the historical sequence of touches for each individual, where the individual touches are variously weighted depending the model.
 
 Some example attribution models are:
 
  * First Touch - the first marketing touch gets 100% credit
+
  * Last Touch - the last marketing touch gets 100% credit
- * Linear - credit is evenly allocated across all touches
- * Time Decay - credit is allocated using a time-dependent function
+
+ * Linear - credit is evenly allocated across all marketing touches (everybody wins!)
+
+ * Time Decay - credit is allocated to marketing touches using a time-dependent function (like exponential decay)
+
+The Google Analytics website provides additional detail on attribution modeling.
 
 https://support.google.com/analytics/answer/1662518?hl=en
 
-In Part 1. of this GraphGist I'll show you how we can leverage relationships to compute marketing attributions, using multiple simulataneous models - a formidable task for a typical SQL database, but very straightforward in Neo4j.  In Part 2, we'll use the marketing attribution models to provide personalized marketing recommendations for individuals who have not yet converted to a lead.
+
+
 
 ![funnel](https://cloud.githubusercontent.com/assets/5991751/19055116/4ac09242-8977-11e6-9448-fa92575812d1.png)
 
@@ -109,7 +129,7 @@ session.close()
 ```
 
 
-##Step 2. 
+##Step 2.
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
 
