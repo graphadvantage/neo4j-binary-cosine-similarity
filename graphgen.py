@@ -17,11 +17,6 @@ driver = GraphDatabase.driver("bolt://localhost",
 session = driver.session()
 
 
-detachDelete = '''
-MATCH (n) DETACH DELETE n
-'''
-
-
 generate1 = '''
 CALL generate.nodes('Individual', '{firstName: firstName, lastName: lastName}', 50) YIELD nodes as i
 FOREACH (n IN i |
