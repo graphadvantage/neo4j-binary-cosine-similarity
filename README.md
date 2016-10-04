@@ -191,28 +191,24 @@ You'll get a result like this:
 
 We can see that our (:Individual) Ibrahim has been [:TOUCHED] by at different times by four different (:Activity) nodes. And - thanks to the miracle of random numbers, even once during the summer of '78... it seems like it was just yesterday...AngelFlights...Hair...Disco...
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
-.tg .tg-yw4l{vertical-align:top}
-</style>
-<table class="tg">
+<table>
   <tr>
-    <th class="tg-yw4l" rowspan="5">![andy-gibb-shadow-dancing-rso-3](https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=200&amp;h=200)</th>
-    <th class="tg-yw4l">1. SHADOW DANCING –•– Andy Gibb (RSO)</th>
+    <th rowspan="5">
+    <img src="https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=200&amp;h=200">
+    </th>
+    <th>1. SHADOW DANCING –•– Andy Gibb (RSO)</th>
   </tr>
   <tr>
-    <td class="tg-yw4l">2. BAKER STREET –•– Gerry Rafferty (United Artists)</td>
+    <td>2. BAKER STREET –•– Gerry Rafferty (United Artists)</td>
   </tr>
   <tr>
-    <td class="tg-yw4l">3. IT’S A HEARTACHE –•– Bonnie Tyler (RCA)</td>
+    <td>3. IT’S A HEARTACHE –•– Bonnie Tyler (RCA)</td>
   </tr>
   <tr>
-    <td class="tg-yw4l">4. YOU’RE THE ONE THAT I WANT –•– John Travolta and Olivia Newton-John (RSO)</td>
+    <td>4. YOU’RE THE ONE THAT I WANT –•– John Travolta and Olivia Newton-John (RSO)</td>
   </tr>
   <tr>
-    <td class="tg-yw4l">5. TAKE A CHANCE ON ME –•– Abba (Atlantic)</td>
+    <td>5. TAKE A CHANCE ON ME –•– Abba (Atlantic)</td>
   </tr>
 </table>
 
