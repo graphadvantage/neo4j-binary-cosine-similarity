@@ -5,7 +5,9 @@
 
 ## Introduction
 
-In this GraphGist, we'll take a look at how to use Neo4j to make real-time marketing recommendations. Modern digital marketing produces a ton of data which can be quite unmanagable in traditional SQL databases. However with Neo4j we can leverage the power of the graph to efficiently organize and analyze complex relationships present in our marketing data.
+Graphs are well suited for marketing analytics - a natural fit since marketing is principally about relationships.  In this GraphGist, we'll take a look at how to use Neo4j to make real-time marketing recommendations.
+
+Modern digital marketing produces a ton of data which can be quite unmanagable in traditional SQL databases. However with Neo4j we can leverage the power of the graph to efficiently organize and analyze complex relationships present in our marketing data.
 
 We are going to build a simple recommendation engine that has knowledge of what marketing activities are responsible for driving leads (using marketing attribution modeling) and what sequence of marketing activities are most likely to cause a specific individual to convert to a lead (using k- nearest neighbor and binary cosine similarity).
 
@@ -14,7 +16,7 @@ In Part 1, we'll leverage relationships to compute marketing attributions, resul
 In Part 2, we'll use the marketing attribution models and similarity measures to provide personalized marketing recommendations for individuals who have not yet converted to a lead.
 
 
-##Part 1. Neo4j Marketing Attribution Modeling
+#Part 1. Neo4j Marketing Attribution Modeling
 
 > "Half the money I spend on advertising is wasted; the trouble is I don't know which half." - John Wanamaker
 
@@ -200,36 +202,11 @@ You'll get a result like this:
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
 
-We can see that our (:Individual) Ibrahim has been [:TOUCHED] by at different times by four different (:Activity) nodes. And - thanks to the miracle of random numbers, even once during the summer of '78... long before email...
-
-https://weeklytop40.wordpress.com/1978/06/24/us-top-40-singles-week-ending-24th-june-1978/
-
-<table>
-  <tr>
-    <th rowspan="5">
-    <img src="https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=200&amp;h=200">
-    </th>
-    <td>1. SHADOW DANCING –•– Andy Gibb (RSO)</td>
-  </tr>
-  <tr>
-    <td>2. BAKER STREET –•– Gerry Rafferty (United Artists)</td>
-  </tr>
-  <tr>
-    <td>3. IT’S A HEARTACHE –•– Bonnie Tyler (RCA)</td>
-  </tr>
-  <tr>
-    <td>4. YOU’RE THE ONE THAT I WANT –•– John Travolta and Olivia Newton-John (RSO)</td>
-  </tr>
-  <tr>
-    <td>5. TAKE A CHANCE ON ME –•– Abba (Atlantic)</td>
-  </tr>
-</table>
-
-Okay, let's get back on track...
+We can see that our (:Individual) Ibrahim has been [:TOUCHED] by at different times by four different (:Activity) nodes.
 
 So which (:Activity) should get credit - the last touch? the first touch? multiple touches?
 
-One of the really great things about Neo4j is that time is represented in UNIX epoch format, which means that you can directly operate on time values. Here's our result in table format, sorted by [:TOUCHED] timestamp in descending order:
+One of the great things about Neo4j is that time is represented in UNIX epoch format, which means that you can directly operate on time values. Here's our result in table format, sorted by [:TOUCHED] timestamp in descending order:
 
 ```
 ╒════════════╤═════════════╤═══════════╤═══════════╕
@@ -546,7 +523,7 @@ Here's a summary of our models for this (:Individual):
 
 ##Using the Lead Attribution Models
 
-The power of this approach is that not only are we using our marketing graph to store the entire history of all marketing touches on individuals ( a formidable task for a SQL database), but we have also pre-computed the relative contribution of all activity touches in driving leads, which allows us to directly search the graph on the [:ATTRIBUTED_TO] relationship for most impactful (:Activities) to help optimize our marketing.
+We can directly search the graph on the [:ATTRIBUTED_TO] relationship to understand which activities are contributing the most .
 
 If we want to see the top 10 activities using the lastTouch model, we can run this report:
 
@@ -592,87 +569,91 @@ What about our time-dependent models?
 
 The report query is similar, except now we are averaging and summing the model weights.
 
+These models take into account all touches over all time that may influenced the individual.  I like the expDecay attribution model because it makes the fair assumption that the more recent touches should have more influence compared to older touches.
+
 Sorting on the sum of the {attributionWeight} gives us the ranked contribution to lead conversion by each Activity, and we can also estimate a weighted frequency as the freq * avgWt.
 
 ```
-MATCH (n:Lead) WITH COUNT(n) as nLeads
 MATCH (l:Lead)-[m:ATTRIBUTED_TO {attributionModel: "expDecay"}]->(a:Activity)
-WITH nLeads, m.attributionModel AS model, a.activityId AS activity, COUNT(l) AS leadCount,
-ROUND(AVG(m.attributionWeight)*1000)/1000 AS avgWt, ROUND(sum(m.attributionWeight)*100)/100 AS sumWt
-RETURN model,activity,leadCount, avgWt, sumWt, nLeads AS totalLeads,
-ROUND((toFloat(leadCount)/nLeads)*10000)/100 + ' %' AS freq,
-ROUND((toFloat(leadCount)/nLeads)*avgWt*10000)/100 + ' %' AS weightedFreq
-ORDER BY sumWt DESC LIMIT 10
+WITH nLeads, m.attributionModel AS model, a.activityId AS activity, COUNT(l) AS leadCount, ROUND(AVG(m.attributionWeight)*1000)/1000 AS avgWt, ROUND(SUM(m.attributionWeight)*100)/100 AS sumWt, ROUND(AVG(m.attributionTimeSeq)*100)/100 AS avgTimeSeq
+RETURN model,activity,leadCount, avgWt, sumWt, avgTimeSeq, nLeads AS totalLeads, ROUND((toFloat(leadCount)/nLeads)*10000)/100 + ' %' AS freq, ROUND((toFloat(leadCount)/nLeads)*avgWt*10000)/100 + ' %' AS weightedFreq ORDER BY sumWt DESC
 ```
 
 
-Here is the result, showing (:Activities) ordered by sumWt
+Here is the result, showing (:Activities) ordered by sumWt. More than 30% of the leads are attributed to the two highest ranked Activities, and on average, these are seen as the 2nd or 3rd most recent touch (avgTimeSeq).
 
 ```
 expDecay Lead Attribution Model
-╒════════╤════════╤═════════╤═════╤═════╤══════════╤══════╤════════════╕
-│model   │activity│leadCount│avgWt│sumWt│totalLeads│freq  │weightedFreq│
-╞════════╪════════╪═════════╪═════╪═════╪══════════╪══════╪════════════╡
-│expDecay│30740   │15       │0.273│4.1  │50        │30.0 %│8.19 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│2709812 │16       │0.205│3.27 │50        │32.0 %│6.56 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│51      │12       │0.27 │3.24 │50        │24.0 %│6.48 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│493     │13       │0.214│2.78 │50        │26.0 %│5.56 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│5107    │9        │0.295│2.66 │50        │18.0 %│5.31 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│20      │11       │0.239│2.63 │50        │22.0 %│5.26 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│46669   │11       │0.238│2.62 │50        │22.0 %│5.24 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│80      │6        │0.373│2.24 │50        │12.0 %│4.48 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│9962776 │13       │0.162│2.11 │50        │26.0 %│4.21 %      │
-├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│expDecay│0       │9        │0.21 │1.89 │50        │18.0 %│3.78 %      │
-└────────┴────────┴─────────┴─────┴─────┴──────────┴──────┴────────────┘
-```
-
-
-Here is the result for the linearTouch model
+╒════════╤════════╤═════════╤═════╤═════╤══════════╤══════════╤══════╤════════════╕
+│model   │activity│leadCount│avgWt│sumWt│avgTimeSeq│totalLeads│freq  │weightedFreq│
+╞════════╪════════╪═════════╪═════╪═════╪══════════╪══════════╪══════╪════════════╡
+│expDecay│30740   │15       │0.273│4.1  │2.27      │50        │30.0 %│8.19 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│2709812 │16       │0.205│3.27 │3.06      │50        │32.0 %│6.56 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│51      │12       │0.27 │3.24 │2.17      │50        │24.0 %│6.48 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│493     │13       │0.214│2.78 │2.92      │50        │26.0 %│5.56 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│5107    │9        │0.295│2.66 │2         │50        │18.0 %│5.31 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│20      │11       │0.239│2.63 │2.55      │50        │22.0 %│5.26 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│46669   │11       │0.238│2.62 │3.09      │50        │22.0 %│5.24 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│80      │6        │0.373│2.24 │2.17      │50        │12.0 %│4.48 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│9962776 │13       │0.162│2.11 │3.62      │50        │26.0 %│4.21 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│expDecay│0       │9        │0.21 │1.89 │3.11      │50        │18.0 %│3.78 %      │
+└────────┴────────┴─────────┴─────┴─────┴──────────┴──────────┴──────┴────────────┘
 
 ```
-linearTouch Lead Attribution Model
-╒═══════════╤════════╤═════════╤═════╤═════╤══════════╤══════╤════════════╕
-│model      │activity│leadCount│avgWt│sumWt│totalLeads│freq  │weightedFreq│
-╞═══════════╪════════╪═════════╪═════╪═════╪══════════╪══════╪════════════╡
-│linearTouch│30740   │15       │0.269│4.03 │50        │30.0 %│8.07 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│51      │12       │0.291│3.49 │50        │24.0 %│6.98 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│2709812 │16       │0.217│3.47 │50        │32.0 %│6.94 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│493     │13       │0.26 │3.38 │50        │26.0 %│6.76 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│9962776 │13       │0.259│3.37 │50        │26.0 %│6.73 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│9167612 │11       │0.252│2.77 │50        │22.0 %│5.54 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│46669   │11       │0.25 │2.75 │50        │22.0 %│5.5 %       │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│5942581 │13       │0.189│2.46 │50        │26.0 %│4.91 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│0       │9        │0.257│2.32 │50        │18.0 %│4.63 %      │
-├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
-│linearTouch│20      │11       │0.187│2.06 │50        │22.0 %│4.11 %      │
-└───────────┴────────┴─────────┴─────┴─────┴──────────┴──────┴────────────┘
+
+
+Here is the result for the linearTouch model, the rankings are a bit different.
+
+```
+expDecay Lead Attribution Model
+╒═══════════╤════════╤═════════╤═════╤═════╤══════════╤══════════╤══════╤════════════╕
+│model      │activity│leadCount│avgWt│sumWt│avgTimeSeq│totalLeads│freq  │weightedFreq│
+╞═══════════╪════════╪═════════╪═════╪═════╪══════════╪══════════╪══════╪════════════╡
+│linearTouch│30740   │15       │0.269│4.03 │2.27      │50        │30.0 %│8.07 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│51      │12       │0.291│3.49 │2.17      │50        │24.0 %│6.98 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│2709812 │16       │0.217│3.47 │3.06      │50        │32.0 %│6.94 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│493     │13       │0.26 │3.38 │2.92      │50        │26.0 %│6.76 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│9962776 │13       │0.259│3.37 │3.62      │50        │26.0 %│6.73 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│9167612 │11       │0.252│2.77 │3.45      │50        │22.0 %│5.54 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│46669   │11       │0.25 │2.75 │3.09      │50        │22.0 %│5.5 %       │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│5942581 │13       │0.189│2.46 │4.77      │50        │26.0 %│4.91 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│0       │9        │0.257│2.32 │3.11      │50        │18.0 %│4.63 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────────┼──────┼────────────┤
+│linearTouch│20      │11       │0.187│2.06 │2.55      │50        │22.0 %│4.11 %      │
+└───────────┴────────┴─────────┴─────┴─────┴──────────┴──────────┴──────┴────────────┘
 ```
 
 
 ##Summary
 
+In a typical enterprise there might be hundreds of thousands of marketing activities every month that touch millions of individuals - calculating marketing attribution would be nearly impossible to perform in a SQL database at this scale.
 
+With a graph database we can leverage relationships as inputs to complex, atomic-level calculations as well as for efficiently storing and retrieving the output of simultaneous calculations (also at an atomic level).
 
+Here I've shown how marketing attribution is a straightforward, flexible exercise in Neo4j.  We used [:TOUCHED] relationships to keep a full history of marketing touches on individuals, which were mined to compute marketing attributions using several different models, with the output of each model calculation stored as [:ATTRIBUTED_TO] relationships connecting leads to activities.
 
-Part 2.
-Neo4j Marketing Recommendations
+With these relationships in place it's easy to determine which marketing activities are driving the most leads - our main objective.
+
+Next we'll explore how to make personalized marketing recommendations.
+
+#Part 2. Neo4j Marketing Recommendations
 
 
 *OTUs Expression of Binary Instances i and j*
