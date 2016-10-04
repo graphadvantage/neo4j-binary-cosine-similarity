@@ -32,7 +32,7 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: 
 model2 = '''
 //firstTouch
 MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
-WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl, RANGE(count(*), 1, -1) AS sequence
+WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl
 CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
 MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
 WHERE t.timestamp = touchSeq[0]

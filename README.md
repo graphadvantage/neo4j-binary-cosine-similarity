@@ -189,7 +189,7 @@ You'll get a result like this:
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
 
-We can see that our (:Individual) Ibrahim has been [:TOUCHED] by at different times by four different (:Activity) nodes. And - thanks to the miracle of random numbers, even once during the summer of '78... it seems like it was just yesterday...AngelFlights...Hair...Disco...
+We can see that our (:Individual) Ibrahim has been [:TOUCHED] by at different times by four different (:Activity) nodes. And - thanks to the miracle of random numbers, even once during the summer of '78... long before email...
 
 https://weeklytop40.wordpress.com/1978/06/24/us-top-40-singles-week-ending-24th-june-1978/
 
@@ -213,6 +213,8 @@ https://weeklytop40.wordpress.com/1978/06/24/us-top-40-singles-week-ending-24th-
     <td>5. TAKE A CHANCE ON ME –•– Abba (Atlantic)</td>
   </tr>
 </table>
+
+Okay, let's get back on track...
 
 So which (:Activity) should get credit - the last touch? the first touch? multiple touches?
 
@@ -241,18 +243,20 @@ To create attribution models, all we need to do is collect all the [:TOUCHED] re
 
 ```
 
-The starting point is to make collections of [:TOUCHED] timestamps, and then sort them using the apoc.coll.sort() procedure.
+The starting point is to make collections of [:TOUCHED] timestamps, and then sort them using the apoc.coll.sort() procedure:
 
 ```
 MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
 WITH i, count(*) AS touches, collect(t.timestamp) AS touchColl
 CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
-RETURN i.firstName, touches, touchColl  LIMIT 10
+RETURN i.firstName, touches, touchSeq  LIMIT 10
 ```
 
-This produces collections for each (:Individual)
+This produces collections for each (:Individual), with the oldest timestamp at touchSeq[0] and the most recent timestamp at touchSeq[touches-1]:
 
 ```
+rerun using touchSeq
+
 ╒═══════════╤═══════╤═════════════════════════════════════════════════════════════════════════════════════════╕
 │i.firstName│touches│touchColl                                                                                │
 ╞═══════════╪═══════╪═════════════════════════════════════════════════════════════════════════════════════════╡
@@ -281,9 +285,18 @@ This produces collections for each (:Individual)
 
 ```
 
-Then it's a simple matter to match to the appropriate (:Activity) by [:TOUCHED] timestamp and set the attribution model.
+Now it's a simmple matter to find the appropriate (:Activity) by [:TOUCHED] timestamp using touchSeq[], and set the attribution model (:Lead)-[:ATTRIBUTED_TO]->(:Activity).
 
-This is the query for the lastTouch attribution model, which gives 100% credit to the most recent activity:
+```
+MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
+WHERE t.timestamp = touchSeq[touches-1]
+MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: touchSeq[touches-1], attributionTouchSeq: touches, attributionTimeSeq: 1, attributionWeight: 1.0, attributionTouches: touches}]->(a)
+
+```
+
+For lastTouch attribution, which gives 100% credit to the most recent activity, we find the [:TOUCHED] relationships that satisfy `t.timestamp = touchSeq[touches-1]` and assign an attributionWeight = 1.0.
+
+Here's the complete query:
 
 ```
 //lastTouch
@@ -296,7 +309,53 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: 
 
 ```
 
+For firstTouch attribution, which gives 100% credit to the oldest (first) activity, we find the [:TOUCHED] relationships that satisfy `t.timestamp = touchSeq[0]` and assign an attributionWeight = 1.0.  
 
+```
+//firstTouch
+MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
+WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl
+CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
+MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
+WHERE t.timestamp = touchSeq[0]
+MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'firstTouch', attributionTouchTime: touchSeq[0], attributionTouchSeq: 1, attributionTimeSeq: touches, attributionWeight: 1.0, attributionTouches: touches}]->(a)
+
+```
+
+For linearTouch attribution, which evenly distributes credit across activities, we'll create a sorted collection of timestamps and we'll also generate a RANGE of integers from [1..touches] that we'll use as index values for accessing touchSeq[] timestamps for matching.
+
+find the [:TOUCHED] relationships that satisfy `t.timestamp = touchSeq[touches-seq]` and assign an attributionWeight equal to 1/touches ``
+
+note: update python nb remove RANGE
+
+```
+//linearTouch
+MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
+WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl, RANGE(count(*), 1, -1) AS sequence
+CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
+UNWIND sequence AS seq
+WITH i, touches, touchSeq[touches-seq] AS ts, seq, 1/toFloat(touches) AS linear_touch_wt
+MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
+WHERE t.timestamp = ts
+MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'linearTouch', attributionTouchTime: ts, attributionTouchSeq: (touches-seq+1), attributionTimeSeq: seq, attributionWeight: linear_touch_wt, attributionTouches: touches}]->(a)
+
+```
+
+For expDecay attribution
+
+```
+//expDecay
+MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
+WITH i,count(*) AS touches, COLLECT(t.timestamp) AS touchColl,  RANGE(count(*), 1, -1) AS sequence
+CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
+UNWIND sequence AS seq
+WITH i, touches, touchSeq[touches-seq] AS ts, seq,
+CASE touches WHEN 1 THEN 1 ELSE EXP(seq*-0.7) END AS exp_decay_wt
+MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
+WHERE t.timestamp = ts
+MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'expDecay', attributionTouchTime: ts, attributionTouchSeq: (touches-seq+1),  attributionTimeSeq: seq, attributionWeight: exp_decay_wt, attributionTouches: touches}]->(a)
+
+```
 
 
 ![attribution](https://cloud.githubusercontent.com/assets/5991751/19056221/c9f9114c-897c-11e6-8107-eab4354ee990.png)
