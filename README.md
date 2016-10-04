@@ -191,7 +191,7 @@ You'll get a result like this, where our (:Individual) has been [:TOUCHED] by mu
 
 Our (:Individual) has been [:TOUCHED] by four different (:Activity) nodes, each at different times (and apparently even during the disco era!)
 
-So which (:Activity) should get credit - the last touch? the first touch? multiple touches? 
+So which (:Activity) should get credit - the last touch? the first touch? multiple touches?
 
 One of the really great things about Neo4j is that time is represented in UNIX epoch format, which means that you can directly operate on time values. Here's our result in table format, sorted by [:TOUCHED] timestamp in descending order:
 
@@ -217,6 +217,62 @@ To create attribution models, all we need to do is collect all the [:TOUCHED] re
 (:Lead)-[:ATTRIBUTED_TO {attributionModel: expDecay}]->(:Activity)
 
 ```
+
+The starting point is to make collections of [:TOUCHED] timestamps, and then sort them using the apoc.coll.sort() procedure.
+
+```
+MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
+WITH i, count(*) AS touches, collect(t.timestamp) AS touchColl
+CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
+RETURN i.firstName, touches, touchColl  LIMIT 10
+```
+
+This produces collections for each (:Individual)
+
+```
+╒═══════════╤═══════╤═════════════════════════════════════════════════════════════════════════════════════════╕
+│i.firstName│touches│touchColl                                                                                │
+╞═══════════╪═══════╪═════════════════════════════════════════════════════════════════════════════════════════╡
+│Michel     │5      │[683214895624, 1127426290931, 1291272829003, 1022527753486, 1147267584540]               │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Lelia      │5      │[773610084727, 1236021026000, 1397203487581, 996162214244, 1069739471934]                │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Julie      │9      │[741878204719, 1016436036278, 1422497088344, 1413566631375, 1370401727621, 1361081390290,│
+│           │       │ 1349002092720, 1155688166191, 787410706000]                                             │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Grady      │8      │[892339299937, 632188698743, 1210582690808, 1015726257805, 1376076806159, 1169231572498, │
+│           │       │1084620820709, 1166570106468]                                                            │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Bridie     │5      │[1424960410657, 1352584281748, 698291669105, 1438324410676, 827463700452]                │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Adrain     │3      │[1315105479995, 1433439883470, 1090639800509]                                            │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Greyson    │2      │[1202749235437, 1429128653726]                                                           │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Earnestine │1      │[774153831192]                                                                           │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Carlee     │3      │[1365162376421, 1471502656954, 508051588542]                                             │
+├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
+│Burley     │2      │[1363063898626, 1370542711963]                                                           │
+└───────────┴───────┴─────────────────────────────────────────────────────────────────────────────────────────┘
+
+```
+
+Then it's a simple matter to match to the appropriate (:Activity) by [:TOUCHED] timestamp and set the attribution model.
+
+This is the query for the lastTouch attribution model, which gives 100% credit to the most recent activity:
+
+```
+//lastTouch
+MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
+WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl
+CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
+MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
+WHERE t.timestamp = touchSeq[touches-1]
+MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: touchSeq[touches-1], attributionTouchSeq: touches, attributionTimeSeq: 1, attributionWeight: 1.0, attributionTouches: touches}]->(a)
+
+```
+
 
 
 

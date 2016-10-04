@@ -21,7 +21,7 @@ session = driver.session()
 model1 = '''
 //lastTouch
 MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
-WITH i, count(*) AS touches, collect(t.timestamp) AS touchColl
+WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl
 CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
 MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
 WHERE t.timestamp = touchSeq[touches-1]
@@ -32,7 +32,7 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: 
 model2 = '''
 //firstTouch
 MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
-WITH i, count(*) AS touches, collect(t.timestamp) AS touchColl, RANGE(count(*), 1, -1) AS sequence
+WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl, RANGE(count(*), 1, -1) AS sequence
 CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
 MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
 WHERE t.timestamp = touchSeq[0]
@@ -43,7 +43,7 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'firstTouch', attributionTouchTime:
 model3 = '''
 //linearTouch
 MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
-WITH i, count(*) AS touches, collect(t.timestamp) AS touchColl, RANGE(count(*), 1, -1) AS sequence
+WITH i, count(*) AS touches, COLLECT(t.timestamp) AS touchColl, RANGE(count(*), 1, -1) AS sequence
 CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
 UNWIND sequence AS seq
 WITH i, touches, touchSeq[touches-seq] AS ts, seq, 1/toFloat(touches) AS linear_touch_wt
