@@ -250,7 +250,7 @@ To create attribution models, all we need to do is collect all the [:TOUCHED] re
 
 ```
 
-The starting point is to make collections of [:TOUCHED] timestamps, and then sort them using the apoc.coll.sort() procedure:
+We can make collections of [:TOUCHED] timestamps, and then sort them using the apoc.coll.sort() procedure:
 
 ```
 MATCH (:Activity)-[t:TOUCHED]->(i:Individual)-[:CONVERTED_TO]->(:Lead)
@@ -292,18 +292,7 @@ rerun using touchSeq
 
 ```
 
-Now it's a simple matter to find the appropriate (:Activity) by [:TOUCHED] timestamp using touchSeq[], and set the attribution model (:Lead)-[:ATTRIBUTED_TO]->(:Activity).
-
-```
-MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
-WHERE t.timestamp = touchSeq[touches-1]
-MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: touchSeq[touches-1], attributionTouchSeq: touches, attributionTimeSeq: 1, attributionWeight: 1.0, attributionTouches: touches}]->(a)
-
-```
-
-For lastTouch attribution, which gives 100% credit to the most recent activity, we find the [:TOUCHED] relationships that satisfy `t.timestamp = touchSeq[touches-1]` and assign an attributionWeight = 1.0.
-
-Here's the complete query:
+For the "Last Touch" model, we use the most recent timestamp from the sorted timestamp collection (touchSeq) to search for the (:Activity) with most recent [:TOUCH], and set the [:ATTRIBUTED_TO] relationship between this (:Activity) and the (:Lead).  Per the model, the attributionWeight is set 1.0.  I'm also recording some additional data about this  model, including the model name (attributionModel), the timestamp used in the attribution (attributionTouchTime), this touch's position relative to sequence (attributionTouchSeq [1 is oldest]), and relative to time (attributionTimeSeq [1 is the latest]), and total touches (attributionTouches).
 
 ```
 //lastTouch
@@ -316,7 +305,7 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: 
 
 ```
 
-For firstTouch attribution, which gives 100% credit to the oldest (first) activity, we find the [:TOUCHED] relationships that satisfy `t.timestamp = touchSeq[0]` and assign an attributionWeight = 1.0.  
+The "First Touch" model is exactly the same, except now we are searching the graph for the oldest (:Activity)-[:TOUCHED]-> relationship, using `t.timestamp = touchSeq[0]`. As above, the attributionWeight = 1.0.  
 
 ```
 //firstTouch
@@ -329,11 +318,10 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'firstTouch', attributionTouchTime:
 
 ```
 
-For linearTouch attribution, which evenly distributes credit across activities, we'll create a sorted collection of timestamps and we'll also generate a RANGE of integers from [1..touches] that we'll use as index values for accessing touchSeq[] timestamps for matching.
+The next two models require weights to be set for all participating touches. To accomplish this we'll COLLECT and sort the touches as above, and also generate a RANGE of integers from [touches..1] that represents a sequence index.  We'll UNWIND the touch collection on this sequence and use its values as inputs for our [:TOUCHED] search and for the weighting math for each touch.
 
-find the [:TOUCHED] relationships that satisfy `t.timestamp = touchSeq[touches-seq]` and assign an attributionWeight equal to 1/touches
+For the "Linear Touch" attribution model the weighting is the inverse of the number of touches in the sequence. We have to convert (touches) to a float prior to division.
 
-note: update python nb remove RANGE
 
 ```
 //linearTouch
@@ -348,7 +336,7 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'linearTouch', attributionTouchTime
 
 ```
 
-For expDecay attribution
+For the "Exponential Decay" attribution model we'll use e^( 0.7 * t ) as the time-dependent decay function, which halves the weighting at every time step. We need to wrap this in a CASE statement to handle collections of only 1 touch, in which case the weight should be equal to 1.
 
 ```
 //expDecay
@@ -363,6 +351,8 @@ WHERE t.timestamp = ts
 MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'expDecay', attributionTouchTime: ts, attributionTouchSeq: (touches-seq+1),  attributionTimeSeq: seq, attributionWeight: exp_decay_wt, attributionTouches: touches}]->(a)
 
 ```
+
+Here's the full script, which applies all four models to all the (:Leads) in the graph.
 
 ```
 #STEP 2 : Compute lead attribution models from sequence of marketing activity touches sorted by timestamp
