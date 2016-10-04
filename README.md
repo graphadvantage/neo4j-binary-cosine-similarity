@@ -554,14 +554,14 @@ If we want to see the top 10 activities using the lastTouch model, we can run th
  MATCH (n:Lead) WITH COUNT(n) as nLeads
  MATCH (l:Lead)-[m:ATTRIBUTED_TO {attributionModel: "lastTouch"}]->(a:Activity)
  WITH nLeads, m.attributionModel AS model, a.activityId AS activity, COUNT(l) AS leadCount
- RETURN model,activity,leadCount,nLeads AS totalLeads, ROUND((toFloat(leadCount)/nLeads)*10000)/100 + ' %' AS freq ORDER BY leadCount DESC LIMIT 10
+ RETURN model,activity,leadCount,nLeads AS totalLeads, ROUND((toFloat(leadCount)/nLeads)*10000)/100 + ' %' AS freq
+ ORDER BY leadCount DESC LIMIT 10
  ```
 
 The results show that 26% of the leads can be attributed to 3 activities.
 
-
 ```
-
+lastTouch Lead Attribution Model
  ╒═════════╤════════╤═════════╤══════════╤══════╕
  │model    │activity│leadCount│totalLeads│freq  │
  ╞═════════╪════════╪═════════╪══════════╪══════╡
@@ -588,7 +588,87 @@ The results show that 26% of the leads can be attributed to 3 activities.
 
 ```
 
+What about our time-dependent models?
+
+The report query is similar, except now we are averaging and summing the model weights.
+
+Sorting on the sum of the {attributionWeight} gives us the ranked contribution to lead conversion by each Activity, and we can also estimate a weighted frequency as the freq * avgWt.
+
+```
+MATCH (n:Lead) WITH COUNT(n) as nLeads
+MATCH (l:Lead)-[m:ATTRIBUTED_TO {attributionModel: "expDecay"}]->(a:Activity)
+WITH nLeads, m.attributionModel AS model, a.activityId AS activity, COUNT(l) AS leadCount,
+ROUND(AVG(m.attributionWeight)*1000)/1000 AS avgWt, ROUND(sum(m.attributionWeight)*100)/100 AS sumWt
+RETURN model,activity,leadCount, avgWt, sumWt, nLeads AS totalLeads,
+ROUND((toFloat(leadCount)/nLeads)*10000)/100 + ' %' AS freq,
+ROUND((toFloat(leadCount)/nLeads)*avgWt*10000)/100 + ' %' AS weightedFreq
+ORDER BY sumWt DESC LIMIT 10
+```
+
+
+Here is the result, showing (:Activities) ordered by sumWt
+
+```
+expDecay Lead Attribution Model
+╒════════╤════════╤═════════╤═════╤═════╤══════════╤══════╤════════════╕
+│model   │activity│leadCount│avgWt│sumWt│totalLeads│freq  │weightedFreq│
+╞════════╪════════╪═════════╪═════╪═════╪══════════╪══════╪════════════╡
+│expDecay│30740   │15       │0.273│4.1  │50        │30.0 %│8.19 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│2709812 │16       │0.205│3.27 │50        │32.0 %│6.56 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│51      │12       │0.27 │3.24 │50        │24.0 %│6.48 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│493     │13       │0.214│2.78 │50        │26.0 %│5.56 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│5107    │9        │0.295│2.66 │50        │18.0 %│5.31 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│20      │11       │0.239│2.63 │50        │22.0 %│5.26 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│46669   │11       │0.238│2.62 │50        │22.0 %│5.24 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│80      │6        │0.373│2.24 │50        │12.0 %│4.48 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│9962776 │13       │0.162│2.11 │50        │26.0 %│4.21 %      │
+├────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│expDecay│0       │9        │0.21 │1.89 │50        │18.0 %│3.78 %      │
+└────────┴────────┴─────────┴─────┴─────┴──────────┴──────┴────────────┘
+```
+
+
+Here is the result for the linearTouch model
+
+```
+linearTouch Lead Attribution Model
+╒═══════════╤════════╤═════════╤═════╤═════╤══════════╤══════╤════════════╕
+│model      │activity│leadCount│avgWt│sumWt│totalLeads│freq  │weightedFreq│
+╞═══════════╪════════╪═════════╪═════╪═════╪══════════╪══════╪════════════╡
+│linearTouch│30740   │15       │0.269│4.03 │50        │30.0 %│8.07 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│51      │12       │0.291│3.49 │50        │24.0 %│6.98 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│2709812 │16       │0.217│3.47 │50        │32.0 %│6.94 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│493     │13       │0.26 │3.38 │50        │26.0 %│6.76 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│9962776 │13       │0.259│3.37 │50        │26.0 %│6.73 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│9167612 │11       │0.252│2.77 │50        │22.0 %│5.54 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│46669   │11       │0.25 │2.75 │50        │22.0 %│5.5 %       │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│5942581 │13       │0.189│2.46 │50        │26.0 %│4.91 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│0       │9        │0.257│2.32 │50        │18.0 %│4.63 %      │
+├───────────┼────────┼─────────┼─────┼─────┼──────────┼──────┼────────────┤
+│linearTouch│20      │11       │0.187│2.06 │50        │22.0 %│4.11 %      │
+└───────────┴────────┴─────────┴─────┴─────┴──────────┴──────┴────────────┘
+```
+
+
 ##Summary
+
+
 
 
 Part 2.
