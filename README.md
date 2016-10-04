@@ -22,11 +22,11 @@ The main goal of marketing is to create demand - doing lots of targeted messagin
 
 Marketers think about a funnel where marketing activities touch individuals who may or may not convert to leads.
 
-This can be represented as a simple graph, that any marketer will understand:
+This can be represented as a simple graph:
 
 ![funnel](https://cloud.githubusercontent.com/assets/5991751/19055116/4ac09242-8977-11e6-9448-fa92575812d1.png)
 
-And when an individual does convert to a lead, the next question is -- which of the various marketing activities (an email, an ad, an event, a webinar, a website visit, a social share, etc) that have touched the individual should get the credit?  
+And when an individual does convert to a lead, the next question is -- which of the various marketing activities (an email, an ad, an event, a webinar, a website visit, a social share, etc) that touched the individual should properly get the credit for the conversion?  
 
 This is the marketing attribution problem - often hotly debated, since every marketer would like to claim that it was their campaign that drove the conversion.  So how can we sort this out?
 
