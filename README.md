@@ -191,12 +191,14 @@ You'll get a result like this:
 
 We can see that our (:Individual) Ibrahim has been [:TOUCHED] by at different times by four different (:Activity) nodes. And - thanks to the miracle of random numbers, even once during the summer of '78... it seems like it was just yesterday...AngelFlights...Hair...Disco...
 
+https://weeklytop40.wordpress.com/1978/06/24/us-top-40-singles-week-ending-24th-june-1978/
+
 <table>
   <tr>
     <th rowspan="5">
     <img src="https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=200&amp;h=200">
     </th>
-    <th>1. SHADOW DANCING –•– Andy Gibb (RSO)</th>
+    <td>1. SHADOW DANCING –•– Andy Gibb (RSO)</td>
   </tr>
   <tr>
     <td>2. BAKER STREET –•– Gerry Rafferty (United Artists)</td>
@@ -211,22 +213,6 @@ We can see that our (:Individual) Ibrahim has been [:TOUCHED] by at different ti
     <td>5. TAKE A CHANCE ON ME –•– Abba (Atlantic)</td>
   </tr>
 </table>
-
-![andy-gibb-shadow-dancing-rso-3](https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=200&h=200)
-
-https://weeklytop40.wordpress.com/1978/06/24/us-top-40-singles-week-ending-24th-june-1978/
-
-1. SHADOW DANCING –•– Andy Gibb (RSO)
-
-2. BAKER STREET –•– Gerry Rafferty (United Artists)
-
-3. IT’S A HEARTACHE –•– Bonnie Tyler (RCA)
-
-4. YOU’RE THE ONE THAT I WANT –•– John Travolta and Olivia Newton-John (RSO)
-
-5. TAKE A CHANCE ON ME –•– Abba (Atlantic)
-
-...okay, enough - let's get back on track!
 
 So which (:Activity) should get credit - the last touch? the first touch? multiple touches?
 
