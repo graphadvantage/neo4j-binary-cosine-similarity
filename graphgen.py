@@ -21,7 +21,7 @@ generate1 = '''
 CALL generate.nodes('Individual', '{firstName: firstName, lastName: lastName}', 50) YIELD nodes as i
 FOREACH (n IN i |
 CREATE (l:Lead)
-SET l.timestamp = 0, l.dispLabel = "Lead"
+SET l.dispLabel = "Lead"
 MERGE (n)-[c:CONVERTED_TO]->(l))
 RETURN *
 ;
@@ -58,10 +58,58 @@ RETURN *
 session = driver.session()
 t0 = time.time()
 print("processing...")
-session.run(generate1)
-session.run(generate2)
-session.run(generate3)
-session.run(generate4)
+result = session.run(generate1)
+print(round((time.time() - t0)*1000,1), " ms elapsed time")
+print('-----------------')
+summary = result.consume()
+print(summary.statement)
+print(summary.notifications)
+print(summary.counters)
+session.close()
+
+
+session = driver.session()
+t0 = time.time()
+print("processing...")
+result = session.run(generate2)
+print(round((time.time() - t0)*1000,1), " ms elapsed time")
+print('-----------------')
+summary = result.consume()
+print(summary.statement)
+print(summary.notifications)
+print(summary.counters)
+session.close()
+
+
+session = driver.session()
+t0 = time.time()
+print("processing...")
+result = session.run(generate3)
+print(round((time.time() - t0)*1000,1), " ms elapsed time")
+print('-----------------')
+summary = result.consume()
+print(summary.statement)
+print(summary.notifications)
+print(summary.counters)
+session.close()
+
+
+session = driver.session()
+t0 = time.time()
+print("processing...")
+result = session.run(generate4)
+print(round((time.time() - t0)*1000,1), " ms elapsed time")
+print('-----------------')
+summary = result.consume()
+print(summary.statement)
+print(summary.notifications)
+print(summary.counters)
+session.close()
+
+
+session = driver.session()
+t0 = time.time()
+print("processing...")
 result = session.run(generate5)
 print(round((time.time() - t0)*1000,1), " ms elapsed time")
 print('-----------------')
