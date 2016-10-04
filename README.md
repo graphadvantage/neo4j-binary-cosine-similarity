@@ -177,7 +177,7 @@ session.close()
 
 So now we're ready to take a look at our marketing activity graph and set some attributions for lead conversions.
 
-If you do a simple query, picking a node that has the [c:CONVERTED_TO] relationship -
+If you run a simple query, picking a node that has the [c:CONVERTED_TO] relationship -
 
 ```
 MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
@@ -185,11 +185,23 @@ WHERE id(i) = 6
 RETURN a.activityId, t.timestamp, i.firstName, l.dispLabel ORDER BY t.timestamp DESC
 ```
 
-You'll get a result like this, where our (:Individual) has been [:TOUCHED] by multiple (:Activity) nodes:
+You'll get a result like this:
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
 
-Our (:Individual) has been [:TOUCHED] by four different (:Activity) nodes, each at different times (and apparently even during the disco era!)
+Our (:Individual {firstName: Ibrahim}) has been [:TOUCHED] by at different times by four different (:Activity) nodes. And apparently, even once during the disco era...
+
+![andy-gibb-shadow-dancing-rso-3]https://weeklytop40.files.wordpress.com/1978/07/andy-gibb-shadow-dancing-rso-3.jpg?w=600&h=600
+
+1 1 SHADOW DANCING –•– Andy Gibb (RSO)
+2 3 BAKER STREET –•– Gerry Rafferty (United Artists)
+3 4 IT’S A HEARTACHE –•– Bonnie Tyler (RCA)
+4 2 YOU’RE THE ONE THAT I WANT –•– John Travolta and Olivia Newton-John (RSO)
+5 6 TAKE A CHANCE ON ME –•– Abba (Atlantic)
+
+https://weeklytop40.wordpress.com/1978/06/24/us-top-40-singles-week-ending-24th-june-1978/
+
+Anyway, let's get back on track.
 
 So which (:Activity) should get credit - the last touch? the first touch? multiple touches?
 
