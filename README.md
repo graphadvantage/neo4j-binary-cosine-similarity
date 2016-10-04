@@ -18,7 +18,7 @@ In Part 2, we'll use the marketing attribution models and similarity measures to
 
 > "Half the money I spend on advertising is wasted; the trouble is I don't know which half." - John Wanamaker
 
-The main goal of marketing is to create demand - doing lots of targeted messaging across different marketing channels, trying to convert individuals from awareness to consideration, or more specifically converting to a lead. What constitutes a lead varies depending on the business - examples include: filling out a contact form, adding an item to a cart, registering for a webinar, walking into a showroom.
+The main goal of marketing is to create demand - doing lots of targeted messaging across different marketing channels, trying to convert individuals from awareness to consideration - or more specifically - converting individuals to leads. What constitutes a lead varies depending on the business - examples include: filling out a contact form, adding an item to a cart, registering for a webinar, walking into a showroom.
 
 Marketers think about a funnel where marketing activities touch individuals who may or may not convert to leads.
 
