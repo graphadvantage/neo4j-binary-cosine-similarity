@@ -189,7 +189,11 @@ You'll get a result like this, where our (:Individual) has been [:TOUCHED] by mu
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
 
-One of the really great things about Neo4j is that time is represent in UNIX epoch format, which means that you can directly sort on time. Here's our result in table format:
+Our (:Individual) has been [:TOUCHED] by four different (:Activity) nodes, each at different times (and apparently even during the disco era!)
+
+So which (:Activity) should get credit - the last touch? the first touch? multiple touches? 
+
+One of the really great things about Neo4j is that time is represented in UNIX epoch format, which means that you can directly operate on time values. Here's our result in table format, sorted by [:TOUCHED] timestamp in descending order:
 
 ```
 ╒════════════╤═════════════╤═══════════╤═══════════╕
@@ -205,7 +209,7 @@ One of the really great things about Neo4j is that time is represent in UNIX epo
 └────────────┴─────────────┴───────────┴───────────┘
 ```
 
-To create attribution models, all we need to is collect all the [:TOUCHED] relationships for each (:Individual) that has [:CONVERTED_TO] a (:Lead), sort the collection and compute the model.  Because the model represents the unique vector of historical touches specific to the individual, we'll instantiate the attribution models as relationships, which also allows us to have as many models as we'd like:
+To create attribution models, all we need to do is collect all the [:TOUCHED] relationships for each (:Individual) that has [:CONVERTED_TO] a (:Lead), sort the collection and compute the model.  Because the model represents the unique vector of historical touches specific to the individual, we'll instantiate the attribution models as relationships, which also allows us to have as many models as we'd like:
 
 ```
 (:Lead)-[:ATTRIBUTED_TO {attributionModel: lastTouch}]->(:Activity)
