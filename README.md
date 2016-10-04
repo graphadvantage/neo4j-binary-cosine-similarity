@@ -9,7 +9,7 @@ In this GraphGist, we'll take a look at how to use Neo4j to make real-time marke
 
 We are going to build a simple recommendation engine that has knowledge of what marketing activities are responsible for driving leads (using marketing attribution modeling) and what sequence of marketing activities are most likely to cause a specific individual to convert to a lead (using k- nearest neighbor and binary cosine similarity).
 
-In Part 1. of this GraphGist I'll show you how we can leverage relationships to compute marketing attributions, resulting in multiple simultaneous attribution models.
+In Part 1, we'll leverage relationships to compute marketing attributions, resulting in multiple simultaneous attribution models that can be directly queried.
 
 In Part 2, we'll use the marketing attribution models and similarity measures to provide personalized marketing recommendations for individuals who have not yet converted to a lead.
 
@@ -19,6 +19,12 @@ In Part 2, we'll use the marketing attribution models and similarity measures to
 > "Half the money I spend on advertising is wasted; the trouble is I don't know which half." - John Wanamaker
 
 The main goal of marketing is to create demand - doing lots of targeted messaging across different marketing channels, trying to convert individuals from awareness to consideration, or more specifically converting to a lead. What constitutes a lead varies depending on the business - examples include: filling out a contact form, adding an item to a cart, registering for a webinar, walking into a showroom.
+
+Marketers think about a funnel where marketing activities touch individuals who may or may not convert to leads.
+
+This can be represented as a simple graph, that any marketer will understand:
+
+![funnel](https://cloud.githubusercontent.com/assets/5991751/19055116/4ac09242-8977-11e6-9448-fa92575812d1.png)
 
 And when an individual does convert to a lead, the next question is -- which of the various marketing activities (an email, an ad, an event, a webinar, a website visit, a social share, etc) that have touched the individual should get the credit?  
 
@@ -41,15 +47,18 @@ The Google Analytics website provides additional detail on attribution modeling.
 https://support.google.com/analytics/answer/1662518?hl=en
 
 
-
-
-![funnel](https://cloud.githubusercontent.com/assets/5991751/19055116/4ac09242-8977-11e6-9448-fa92575812d1.png)
-
 ##Step 1. Make the Test Graph
 
-So let's start by creating a graph, here we'll use the GraphAware GraphGen plugin to make 1M (:Organization) nodes, and give them a randomly assigned {country: "..."} property (https://github.com/graphaware/neo4j-graphgen-procedure).
+So let's start by creating a graph, here we'll use the GraphAware GraphGen plugin (https://github.com/graphaware/neo4j-graphgen-procedure).
 
 You'll need a running Neo4j instance, and you'll need to compile the graphgen .jar file and add it to Neo4j/plugins and restart Neo4j.
+
+
+
+
+
+
+
 
 This python script uses the Bolt driver.
 
