@@ -61,6 +61,7 @@ We'll make the graph shown above -
 (:Activity)-[:TOUCHED]->(:Individual)-[:CONVERTED_TO]->(:Lead)
 ```
 
+
 However, we'll do a couple of things to make it more real.
 
 We'll make 50 (:Individual) nodes where each is [:CONVERTED_TO] one, and only one (:Lead) node:
@@ -76,6 +77,7 @@ RETURN *
 
 ```
 
+
 Then we'll make 50 (:Individual) nodes that have not converted to leads:
 (this will our target set for recommendations)
 
@@ -84,6 +86,7 @@ CALL generate.nodes('Individual', '{firstName: firstName, lastName: lastName}', 
 RETURN *
 
 ```
+
 
 Next we'll create 25 (:Activity) nodes, where each has a [:TOUCHED] relationship set at random to between 5-30 (:Individual) nodes. The idea here is to get good, but not complete coverage of touches to individuals. We'll also set a random {timestamp: unixTime} on each [:TOUCHED] relationship.
 
@@ -192,6 +195,7 @@ WHERE id(i) = 6
 RETURN a.activityId, t.timestamp, i.firstName, l.dispLabel ORDER BY t.timestamp DESC
 ```
 
+
 You'll get a result like this:
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
@@ -241,6 +245,7 @@ One of the really great things about Neo4j is that time is represented in UNIX e
 └────────────┴─────────────┴───────────┴───────────┘
 ```
 
+
 To create attribution models, all we need to do is collect all the [:TOUCHED] relationships for each (:Individual) that has [:CONVERTED_TO] a (:Lead), sort the collection and compute the model.  Because the model represents the unique vector of historical touches specific to the individual, we'll instantiate the attribution models as relationships, which also allows us to have as many models as we'd like:
 
 ```
@@ -249,6 +254,7 @@ To create attribution models, all we need to do is collect all the [:TOUCHED] re
 (:Lead)-[:ATTRIBUTED_TO {attributionModel: expDecay}]->(:Activity)
 
 ```
+
 
 We can make collections of [:TOUCHED] timestamps, and then sort them using the apoc.coll.sort() procedure:
 
@@ -259,38 +265,40 @@ CALL apoc.coll.sort(touchColl) YIELD value AS touchSeq
 RETURN i.firstName, touches, touchSeq  LIMIT 10
 ```
 
+
 This produces collections for each (:Individual), with the oldest timestamp at touchSeq[0] and the most recent timestamp at touchSeq[touches-1]:
 
 ```
-rerun using touchSeq
-
 ╒═══════════╤═══════╤═════════════════════════════════════════════════════════════════════════════════════════╕
-│i.firstName│touches│touchColl                                                                                │
+│i.firstName│touches│touchSeq                                                                                 │
 ╞═══════════╪═══════╪═════════════════════════════════════════════════════════════════════════════════════════╡
-│Michel     │5      │[683214895624, 1127426290931, 1291272829003, 1022527753486, 1147267584540]               │
+│Michel     │5      │[683214895624, 1022527753486, 1127426290931, 1147267584540, 1291272829003]               │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
-│Lelia      │5      │[773610084727, 1236021026000, 1397203487581, 996162214244, 1069739471934]                │
+│Lelia      │5      │[773610084727, 996162214244, 1069739471934, 1236021026000, 1397203487581]                │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
-│Julie      │9      │[741878204719, 1016436036278, 1422497088344, 1413566631375, 1370401727621, 1361081390290,│
-│           │       │ 1349002092720, 1155688166191, 787410706000]                                             │
+│Julie      │9      │[741878204719, 787410706000, 1016436036278, 1155688166191, 1349002092720, 1361081390290, │
+│           │       │1370401727621, 1413566631375, 1422497088344]                                             │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
-│Grady      │8      │[892339299937, 632188698743, 1210582690808, 1015726257805, 1376076806159, 1169231572498, │
-│           │       │1084620820709, 1166570106468]                                                            │
+│Grady      │8      │[632188698743, 892339299937, 1015726257805, 1084620820709, 1166570106468, 1169231572498, │
+│           │       │1210582690808, 1376076806159]                                                            │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
-│Bridie     │5      │[1424960410657, 1352584281748, 698291669105, 1438324410676, 827463700452]                │
+│Bridie     │5      │[698291669105, 827463700452, 1352584281748, 1424960410657, 1438324410676]                │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
-│Adrain     │3      │[1315105479995, 1433439883470, 1090639800509]                                            │
+│Adrain     │3      │[1090639800509, 1315105479995, 1433439883470]                                            │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
 │Greyson    │2      │[1202749235437, 1429128653726]                                                           │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
 │Earnestine │1      │[774153831192]                                                                           │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
-│Carlee     │3      │[1365162376421, 1471502656954, 508051588542]                                             │
+│Carlee     │3      │[508051588542, 1365162376421, 1471502656954]                                             │
 ├───────────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────┤
 │Burley     │2      │[1363063898626, 1370542711963]                                                           │
 └───────────┴───────┴─────────────────────────────────────────────────────────────────────────────────────────┘
 
 ```
+
+
+###Last Touch Attribution Model
 
 For the "Last Touch" model, we use the most recent timestamp from the sorted timestamp collection (touchSeq) to search for the (:Activity) with most recent [:TOUCH], and set the [:ATTRIBUTED_TO] relationship between this (:Activity) and the (:Lead).  Per the model, the attributionWeight is set 1.0.  I'm also recording some additional data about this  model, including the model name (attributionModel), the timestamp used in the attribution (attributionTouchTime), this touch's position relative to sequence (attributionTouchSeq [1 is oldest]), and relative to time (attributionTimeSeq [1 is the latest]), and total touches (attributionTouches).
 
@@ -305,6 +313,9 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'lastTouch', attributionTouchTime: 
 
 ```
 
+
+###First Touch Attribution Model
+
 The "First Touch" model is exactly the same, except now we are searching the graph for the oldest (:Activity)-[:TOUCHED]-> relationship, using `t.timestamp = touchSeq[0]`. As above, the attributionWeight = 1.0.  
 
 ```
@@ -318,10 +329,12 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'firstTouch', attributionTouchTime:
 
 ```
 
+
+###Linear Touch Attribution Model
+
 The next two models require weights to be set for all participating touches. To accomplish this we'll COLLECT and sort the touches as above, and also generate a RANGE of integers from [touches..1] that represents a sequence index.  We'll UNWIND the touch collection on this sequence and use its values as inputs for our [:TOUCHED] search and for the weighting math for each touch.
 
 For the "Linear Touch" attribution model the weighting is the inverse of the number of touches in the sequence. We have to convert (touches) to a float prior to division.
-
 
 ```
 //linearTouch
@@ -335,6 +348,9 @@ WHERE t.timestamp = ts
 MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'linearTouch', attributionTouchTime: ts, attributionTouchSeq: (touches-seq+1), attributionTimeSeq: seq, attributionWeight: linear_touch_wt, attributionTouches: touches}]->(a)
 
 ```
+
+
+###Exponential Decay Touch Attribution Model
 
 For the "Exponential Decay" attribution model we'll use e^( 0.7 * t ) as the time-dependent decay function, which halves the weighting at every time step. We need to wrap this in a CASE statement to handle collections of only 1 touch, in which case the weight should be equal to 1.
 
@@ -352,7 +368,8 @@ MERGE (l)-[m:ATTRIBUTED_TO {attributionModel:'expDecay', attributionTouchTime: t
 
 ```
 
-Here's the full script, which applies all four models to all the (:Leads) in the graph.
+
+Here's the full script, which applies all four models to the (:Leads) in the graph.
 
 ```
 #STEP 2 : Compute lead attribution models from sequence of marketing activity touches sorted by timestamp
@@ -441,8 +458,28 @@ session.close()
 
 ```
 
+Let's take a look -  
+
+Using the simple query from above, picking a node that has the [c:CONVERTED_TO] relationship -
+
+```
+MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)-[m:ATTRIBUTED_TO]->(a)
+WHERE id(i) = 6
+RETURN *
+```
+
 
 ![attribution](https://cloud.githubusercontent.com/assets/5991751/19056221/c9f9114c-897c-11e6-8107-eab4354ee990.png)
+
+
+Each of the four (:Activity) nodes has been attributed to the (:Lead) node.
+
+The firstTouch model assigns all credit to {activityId: 7}, the lastTouch model (highlighted) assigns all credit to {activityId: 9962776}.
+
+The linearTouch and expDecay models assign credit to all the participating (:Activity) nodes.
+
+Here's a summary of our models for this (:Individual):
+
 
 *Attribution Models & Weights*
 <table>
@@ -506,6 +543,52 @@ session.close()
     <td>0.06</td>
   </tr>
 </table>
+
+##Using the Lead Attribution Models
+
+The power of this approach is that not only are we using our marketing graph to store the entire history of all marketing touches on individuals ( a formidable task for a SQL database), but we have also pre-computed the relative contribution of all activity touches in driving leads, which allows us to directly search the graph on the [:ATTRIBUTED_TO] relationship for most impactful (:Activities) to help optimize our marketing.
+
+If we want to see the top 10 activities using the lastTouch model, we can run this report:
+
+ ```
+ MATCH (n:Lead) WITH COUNT(n) as nLeads
+ MATCH (l:Lead)-[m:ATTRIBUTED_TO {attributionModel: "lastTouch"}]->(a:Activity)
+ WITH nLeads, m.attributionModel AS model, a.activityId AS activity, COUNT(l) AS leadCount
+ RETURN model,activity,leadCount,nLeads AS totalLeads, ROUND((toFloat(leadCount)/nLeads)*10000)/100 + ' %' AS freq ORDER BY leadCount DESC LIMIT 10
+ ```
+
+The results show that 26% of the leads can be attributed to 3 activities.
+
+
+```
+
+ ╒═════════╤════════╤═════════╤══════════╤══════╕
+ │model    │activity│leadCount│totalLeads│freq  │
+ ╞═════════╪════════╪═════════╪══════════╪══════╡
+ │lastTouch│30740   │5        │50        │10.0 %│
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│2709812 │4        │50        │8.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│80      │4        │50        │8.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│46669   │4        │50        │8.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│493     │4        │50        │8.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│5107    │3        │50        │6.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│51      │3        │50        │6.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│20      │3        │50        │6.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│5       │2        │50        │4.0 % │
+ ├─────────┼────────┼─────────┼──────────┼──────┤
+ │lastTouch│4       │2        │50        │4.0 % │
+ └─────────┴────────┴─────────┴──────────┴──────┘
+
+```
+
+##Summary
 
 
 Part 2.
