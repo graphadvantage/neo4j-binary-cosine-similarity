@@ -26,7 +26,9 @@ This can be represented as a simple graph:
 
 ![funnel](https://cloud.githubusercontent.com/assets/5991751/19055116/4ac09242-8977-11e6-9448-fa92575812d1.png)
 
-And when an individual does convert to a lead, the next question is -- which of the various marketing activities (an email, an ad, an event, a webinar, a website visit, a social share, etc) that touched the individual should properly get the credit for the conversion?  
+And when an individual does convert to a lead, the next question is --
+
+Which of the various marketing activities that touched an individual (an email, an ad, an event, a webinar, a website visit, a social share, etc)  should properly get the credit for the conversion?  
 
 This is the marketing attribution problem - often hotly debated, since every marketer would like to claim that it was their campaign that drove the conversion.  So how can we sort this out?
 
@@ -53,14 +55,48 @@ So let's start by creating a graph, here we'll use the GraphAware GraphGen plugi
 
 You'll need a running Neo4j instance, and you'll need to compile the graphgen .jar file and add it to Neo4j/plugins and restart Neo4j.
 
+We'll make the graph shown above -
+
+```
+(:Activity)-[:TOUCHED]->(:Individual)-[:CONVERTED_TO]->(:Lead)
+```
+
+However, we'll do a couple of things to make it more real.
+
+We'll make 50 (:Individual) nodes where each is [:CONVERTED_TO] one, and only one (:Lead) node:
+(this will be our training set for recommendations)
+
+```
+CALL generate.nodes('Individual', '{firstName: firstName, lastName: lastName}', 50) YIELD nodes as i
+FOREACH (n IN i |
+CREATE (l:Lead)
+SET l.timestamp = 0, l.dispLabel = "Lead"
+MERGE (n)-[c:CONVERTED_TO]->(l))
+RETURN *
+
+```
+
+Then we'll make 50 (:Individual) nodes that have not converted to leads:
+(this will our target set for recommendations)
+
+```
+CALL generate.nodes('Individual', '{firstName: firstName, lastName: lastName}', 50) YIELD nodes as i2
+RETURN *
+
+```
+
+Next we'll create 25 (:Activity) nodes, where each has a [:TOUCHED] relationship set at random to between 5-30 (:Individual) nodes. The idea here is to get good, but not complete coverage of touches to individuals. We'll also set a random {timestamp: unixTime} on each [:TOUCHED] relationship.
+
+```
+MATCH (n:Individual) WITH COLLECT(n) AS i
+CALL generate.nodes('Activity', '{activityId: randomNumber}', 25) YIELD nodes as a
+CALL generate.relationships(a,i, 'TOUCHED', '{timestamp: unixTime}', 25, '5-30') YIELD relationships as rel2
+RETURN *
+
+```
 
 
-
-
-
-
-
-This python script uses the Bolt driver.
+Here is the full python script, using the Bolt driver.
 
 ```
 #STEP 1 : Generate fake data using GraphAware graphgen
@@ -137,10 +173,48 @@ session.close()
 
 ```
 
+##Step 2.  Compute and Set Marketing Attribution Models
 
-##Step 2.
+So now we're ready to take a look at our marketing activity graph and set some attributions for lead conversions.
+
+If you do a simple query, picking a node that has the [c:CONVERTED_TO] relationship -
+
+```
+MATCH (a:Activity)-[t:TOUCHED]->(i:Individual)-[c:CONVERTED_TO]->(l:Lead)
+WHERE id(i) = 6
+RETURN a.activityId, t.timestamp, i.firstName, l.dispLabel ORDER BY t.timestamp DESC
+```
+
+You'll get a result like this, where our (:Individual) has been [:TOUCHED] by multiple (:Activity) nodes:
 
 ![sequence](https://cloud.githubusercontent.com/assets/5991751/19055659/007ef590-897a-11e6-83ea-59c65391316b.png)
+
+One of the really great things about Neo4j is that time is represent in UNIX epoch format, which means that you can directly sort on time. Here's our result in table format:
+
+```
+╒════════════╤═════════════╤═══════════╤═══════════╕
+│a.activityId│t.timestamp  │i.firstName│l.dispLabel│
+╞════════════╪═════════════╪═══════════╪═══════════╡
+│9962776     │1375664344473│Ibrahim    │Lead       │
+├────────────┼─────────────┼───────────┼───────────┤
+│5           │1369329139115│Ibrahim    │Lead       │
+├────────────┼─────────────┼───────────┼───────────┤
+│493         │1255375038838│Ibrahim    │Lead       │
+├────────────┼─────────────┼───────────┼───────────┤
+│7           │267417903376 │Ibrahim    │Lead       │
+└────────────┴─────────────┴───────────┴───────────┘
+```
+
+To create attribution models, all we need to is collect all the [:TOUCHED] relationships for each (:Individual) that has [:CONVERTED_TO] a (:Lead), sort the collection and compute the model.  Because the model represents the unique vector of historical touches specific to the individual, we'll instantiate the attribution models as relationships, which also allows us to have as many models as we'd like:
+
+```
+(:Lead)-[:ATTRIBUTED_TO {attributionModel: lastTouch}]->(:Activity)
+
+(:Lead)-[:ATTRIBUTED_TO {attributionModel: expDecay}]->(:Activity)
+
+```
+
+
 
 ![attribution](https://cloud.githubusercontent.com/assets/5991751/19056221/c9f9114c-897c-11e6-8107-eab4354ee990.png)
 
