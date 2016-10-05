@@ -1,7 +1,7 @@
 #STEP 3 : Compute binary cosine similarity
 # I'm using the OTU syntax so that you can try other similarity measures
 # Measures that ignore negative similarity to rest of population: cosine, jaccard, euclidean, manhattan
-# Measures that include negative similarity to rest of population: sokal-michener, faith, ample
+# Measures that include negative similarity to rest of population: sokal-michener, faith
 # http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf
 
 #!pip install neo4j-driver

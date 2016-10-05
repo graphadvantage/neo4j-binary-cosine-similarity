@@ -2,6 +2,9 @@
 
 # Neo4j Use Case: Real-Time Marketing Recommendations
 
+
+#Part 1. Neo4j Marketing Attribution Models
+
 ## Introduction
 
 Graphs are well suited for marketing analytics - a natural fit since marketing is principally about relationships.  In this GraphGist, we'll take a look at how to use Neo4j to make real-time marketing recommendations.

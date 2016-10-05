@@ -42,7 +42,7 @@ session.close()
 
 print()
 print("Marketing Activity Recommendations:")
-print("k-NN using Binary Cosine Similarity and Last Touch Attribution")
+print("k-NN using Binary Similarity and Last Touch Attribution")
 print()
 print("(Recommended next marketing activity for an unconverted individual based on")
 print("nearest converted neighbors with a similar history of marketing touches")
