@@ -119,7 +119,7 @@ The sum of squares of j becomes (1^2)+(1^2)+(1^2)+(1^2)+(1^2)+(0^2) = 5, or the 
 The cosine similarity for (i,j) is  3 / SQRT(4*5) = 0.67
 
 
-##Operational Taxonomic Unit (OTU) Notation for Binary Similarity and Distance Measures
+##Operational Taxonomic Unit (OTU) Notation
 
 You probably noticed the table row marked "OTU" - this refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity: http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf by Choi et al, 2010
 
