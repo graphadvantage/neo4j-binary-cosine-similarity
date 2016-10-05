@@ -162,11 +162,11 @@ d = i̅ • j̅ (i and j absent: 0,0) - all the other data points not included i
 
 Choi et al provide about 70 measures of similarity and distance, to showcase a few:
 
-Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
+> Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
 
-Jaccard Similarity is: a/(a+b+c) = 3/(3 + 2 + 1) = 0.50
+> Jaccard Similarity is: a/(a+b+c) = 3/(3 + 2 + 1) = 0.50
 
-Dice Similarity is: (2\*a)/((2\*a)+b+c) = (2\*3)/((2\*3) + 2 + 1) = 0.66
+> Dice Similarity is: (2\*a)/((2\*a)+b+c) = (2\*3)/((2\*3) + 2 + 1) = 0.66
 
 
 
