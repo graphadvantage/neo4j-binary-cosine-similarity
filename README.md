@@ -118,6 +118,9 @@ The sum of squares of j becomes (1^2)+(1^2)+(1^2)+(1^2)+(1^2)+(0^2) = 5, or the 
 
 The cosine similarity for (i,j) is  3 / SQRT(4*5) = 0.67
 
+
+##Operational Taxonomic Unit (OTU) Notation for Binary Similarity and Distance Measures
+
 You probably noticed the table row marked "OTU" - this refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity: http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf by Choi et al, 2010
 
 The contingency table below describes this notation, which we can use to explore other similarity measures, such as Jaccard and Dice.
@@ -160,13 +163,18 @@ c = i • j̅ (i present, j absent: 1,0) - the vector i minus the intersection =
 
 d = i̅ • j̅ (i and j absent: 0,0) - all the other data points not included in (i,j)
 
-Choi et al, 2010 provide about 70 measures of similarity and distance, to showcase a few:
+Choi et al, 2010 provide about 70 measures of similarity and distance written in OTU notation; to showcase a few using our example:
 
-> Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
+Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
 
-> Jaccard Similarity: a/(a+b+c) = 3/(3 + 2 + 1) = 0.50
+Jaccard Similarity: a/(a+b+c) = 3/(3 + 2 + 1) = 0.50
 
-> Dice Similarity: (2\*a)/((2\*a)+b+c) = (2\*3)/((2\*3) + 2 + 1) = 0.66
+Dice Similarity: (2\*a)/((2\*a)+b+c) = (2\*3)/((2\*3) + 2 + 1) = 0.66
+
+In the next section we'll use OTU notation for computing similarity in our marketing graph
+
+##Step 1. Adding Similarity to the GraphGist
+
 
 
 
