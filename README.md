@@ -283,4 +283,19 @@ session.close()
 
 ![similarity](https://cloud.githubusercontent.com/assets/5991751/19054363/f896d038-8973-11e6-956e-c1014bedbe58.png)
 
+```
+MATCH (a1:Activity)-[:TOUCHED]->(i1:Individual)-[s:SIMILARITY]->(n1:Individual)-[c:CONVERTED_TO]->(l:Lead)-[:ATTRIBUTED_TO {attributionModel: 'lastTouch'}]->(a2:Activity)
+WHERE NOT ((i1)-[:CONVERTED_TO]->(:Lead)) AND a1 <> a2
+WITH i1, s.measure AS msr, s.similarity AS sim, a2.activityId AS acts
+ORDER BY id(i1) ASC, sim DESC
+//sample 10 nearest neighbors with highest similarity
+WITH i1, msr, COLLECT([acts,sim])[0..10] AS nn
+UNWIND nn AS top_nn
+WITH i1, msr, top_nn[0] AS av, ROUND(avg(top_nn[1])*1000)/1000 AS avg_s, count(top_nn[1]) AS cnt_nn
+ORDER BY id(i1) ASC, avg_s DESC, cnt_nn DESC
+//RETURN i1.firstName as target, COLLECT([{activityId:av},{avgSimilarity:avg_s},{countNeighbors:cnt_nn}]) AS reco
+RETURN id(i1) AS targetId, i1.firstName AS firstName, i1.lastName AS lastName, av AS activityId, avg_s AS avgSimilarity, cnt_nn AS countNeighbors , msr AS simMeasure
+
+```
+
 ![neo4j-example-reco](https://cloud.githubusercontent.com/assets/5991751/19052701/a8a35e0e-896c-11e6-89b1-90e4fe480d15.png)
