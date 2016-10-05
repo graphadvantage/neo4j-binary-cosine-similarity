@@ -39,7 +39,6 @@ SET s.similarity = a/SQRT((a+b)*(a+c)), s.measure = 'cosine' // cosine similarit
 //SET s.similarity = (b+c), s.measure = 'manhattan' // manhattan distance
 //SET s.similarity = (a+d)/(a+b+c+d), s.measure = 'sokal-michener' // sokal-michener similarity
 //SET s.similarity = (a+(0.5*d))/(a+b+c+d), s.measure = 'faith' // faith similarity
-//SET s.similarity = ABS((a*(c+d))/(c*(a+b))), s.measure = 'ample' // ample similarity
 '''
 
 session = driver.session()

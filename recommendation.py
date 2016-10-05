@@ -28,7 +28,6 @@ WITH i1, msr, COLLECT([acts,sim])[0..10] AS nn
 UNWIND nn AS top_nn
 WITH i1, msr, top_nn[0] AS av, ROUND(avg(top_nn[1])*1000)/1000 AS avg_s, count(top_nn[1]) AS cnt_nn
 ORDER BY id(i1) ASC, avg_s DESC, cnt_nn DESC
-//RETURN i1.firstName as target, COLLECT([{activityId:av},{avgSimilarity:avg_s},{countNeighbors:cnt_nn}]) AS reco
 RETURN id(i1) AS targetId, i1.firstName AS firstName, i1.lastName AS lastName, av AS activityId, avg_s AS avgSimilarity, cnt_nn AS countNeighbors , msr AS simMeasure
 '''
 
