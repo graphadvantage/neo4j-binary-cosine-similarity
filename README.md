@@ -49,7 +49,7 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
 ![touch-vectors](https://cloud.githubusercontent.com/assets/5991751/19096766/f16a2b30-8a53-11e6-9e07-e88c1b75930e.png)
 
 
-<table>
+<table style="textalign: center">
 <colgroup>
 <col style="width: 83px">
 <col style="width: 76px">
