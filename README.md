@@ -118,7 +118,7 @@ The sum of squares of j becomes (1^2)+(1^2)+(1^2)+(1^2)+(1^2)+(0^2) = 5, or the 
 
 The cosine similarity for (i,j) is  3 / SQRT(4*5) = 0.67
 
-You probably noticed the table row marked "OTU" - this refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity: http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf by Choi et al.
+You probably noticed the table row marked "OTU" - this refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity: http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf by Choi et al, 2010
 
 The contingency table below describes this notation, which we can use to explore other similarity measures, such as Jaccard and Dice.
 
@@ -160,7 +160,7 @@ c = i • j̅ (i present, j absent: 1,0) - the vector i minus the intersection =
 
 d = i̅ • j̅ (i and j absent: 0,0) - all the other data points not included in (i,j)
 
-Choi et al provide about 70 measures of similarity and distance, to showcase a few:
+Choi et al, 2010 provide about 70 measures of similarity and distance, to showcase a few:
 
 > Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
 
