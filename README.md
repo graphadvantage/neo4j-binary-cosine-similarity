@@ -49,7 +49,14 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
 ![touch-vectors](https://cloud.githubusercontent.com/assets/5991751/19096766/f16a2b30-8a53-11e6-9e07-e88c1b75930e.png)
 
 
-<table style="undefined;table-layout: fixed; width: 592px">
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:8px 6px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:8px 6px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-s6z2{text-align:center}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+</style>
+<table class="tg" style="undefined;table-layout: fixed; width: 592px">
 <colgroup>
 <col style="width: 83px">
 <col style="width: 76px">
@@ -61,48 +68,48 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
 <col style="width: 78px">
 </colgroup>
   <tr>
-    <th>activityId</th>
-    <th>51</th>
-    <th>56903247</th>
-    <th>493</th>
-    <th>5</th>
-    <th>9962776</th>
-    <th>7</th>
-    <th>Sum</th>
+    <th class="tg-s6z2">activityId</th>
+    <th class="tg-baqh">51</th>
+    <th class="tg-baqh">56903247</th>
+    <th class="tg-baqh">493</th>
+    <th class="tg-baqh">5</th>
+    <th class="tg-baqh">9962776</th>
+    <th class="tg-baqh">7</th>
+    <th class="tg-baqh">Sum</th>
   </tr>
   <tr>
-    <td>Nicklaus (j)</td>
-    <td>1</td>
-    <td>1</td>
-    <td>1</td>
-    <td>1</td>
-    <td>1</td>
-    <td>0</td>
-    <td>a + b = 5</td>
+    <td class="tg-baqh">Nicklaus (j)</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">a + b = 5</td>
   </tr>
   <tr>
-    <td>Ibrahim (i)</td>
-    <td>0</td>
-    <td>0</td>
-    <td>1</td>
-    <td>1</td>
-    <td>1</td>
-    <td>1</td>
-    <td>a + c = 4</td>
+    <td class="tg-baqh">Ibrahim (i)</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">a + c = 4</td>
   </tr>
   <tr>
-    <td>OTU</td>
-    <td colspan="2">b = i̅ • j</td>
-    <td colspan="3">a = i • j</td>
-    <td>c = i • j̅</td>
-    <td></td>
+    <td class="tg-baqh">OTU</td>
+    <td class="tg-baqh" colspan="2">b = i̅ • j</td>
+    <td class="tg-baqh" colspan="3">a = i • j</td>
+    <td class="tg-baqh">c = i • j̅</td>
+    <td class="tg-baqh"></td>
   </tr>
   <tr>
-    <td>Sum</td>
-    <td colspan="2">b = 2</td>
-    <td colspan="3">a = 3</td>
-    <td>c = 1</td>
-    <td></td>
+    <td class="tg-baqh">Sum</td>
+    <td class="tg-baqh" colspan="2">b = 2</td>
+    <td class="tg-baqh" colspan="3">a = 3</td>
+    <td class="tg-baqh">c = 1</td>
+    <td class="tg-baqh"></td>
   </tr>
 </table>
 
