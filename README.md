@@ -62,13 +62,13 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
 </colgroup>
   <tr>
     <th class="tg-s6z2">activityId</th>
-    <th class="tg-baqh">51</th>
+    <th class="tg-baqh">&nbsp;&nbsp;&nbsp;51&nbsp;&nbsp;</th>
     <th class="tg-baqh">56903247</th>
-    <th class="tg-baqh">493</th>
-    <th class="tg-baqh">5</th>
+    <th class="tg-baqh">&nbsp;&nbsp;493&nbsp;&nbsp;</th>
+    <th class="tg-baqh">&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;</th>
     <th class="tg-baqh">9962776</th>
-    <th class="tg-baqh">7</th>
-    <th class="tg-baqh">Sum</th>
+    <th class="tg-baqh">&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;</th>
+    <th class="tg-baqh">&nbsp;&nbsp;Sum&nbsp;&nbsp;</th>
   </tr>
   <tr>
     <td class="tg-baqh">Nicklaus (j)</td>
