@@ -17,15 +17,35 @@ For more background see the excellent GraphGist by Nicole White where she uses k
 
 http://portal.graphgist.org/graph_gists/movie-recommendations-with-k-nearest-neighbors-and-cosine-similarity
 
+##Cosine Similarity: Movie Recommendations
+
 Cosine similarity is the angle between two vectors in n-dimensional space, and ranges from -1 (exactly dissimilar) to 1 (exactly similar).
 
 It is typically calculated as the dot product of the two vectors, divided by the product of the length of each vector (where the length of each vector is the square root of the sum of squares).
 
-To
-
 ![similarity-eq](https://cloud.githubusercontent.com/assets/5991751/19095909/94375fe2-8a4d-11e6-91ad-ceff4c92549a.png)
 
+In Nicole's movie example, she is working with individuals that have submitted different ratings for the same movie.
+
+The rating vectors are sorted by movie, and the cosine similarity is computed for pairs of ratings (one rating from each individual, for the same movie):
+
 ![similarity-example-eq](https://cloud.githubusercontent.com/assets/5991751/19095933/b4148cae-8a4d-11e6-9855-66f61f8fb245.png)
+
+She then sets a (i1:Individual {name:"M.Hunger"})-[:SIMILARITY]->(i2:Individual {name:"M.Sherman"}) relationship and gives it a value of 0.86.
+
+Now movie recommendations can be produced by averaging the movie ratings of the most similar neighbors, and picking the highest rated movies that the target individual has not seen.
+
+
+##Binary Cosine Similarity: Marketing Recommendations
+
+In the case of marketing activities, we can use cosine similarity but we need to make some modifications to account for how marketing works.
+
+First of all, there's no concept of "rating" - as we saw in Part 1, marketing activities either touch - or don't touch - an individual.
+
+Second, the movie rating case is dealing with exact intersections, whereas for marketing if we compute similarity using the sequence of touches we have to account for intersecting and non intersecting parts of each vector pair.
+
+![touch-vectors](https://cloud.githubusercontent.com/assets/5991751/19096766/f16a2b30-8a53-11e6-9e07-e88c1b75930e.png)
+
 
 
 *OTUs Expression of Binary Instances i and j*
