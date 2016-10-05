@@ -150,23 +150,23 @@ The contingency table below describes this notation, which we can use to explore
 </tr>
 </table>
 
-OTU notation describe how the vectors are related
+OTU notation describes how the vectors are related:
 
-a = i • j  (i and j present: 1,1) - the intersection of i, j
+a = i • j  (i and j present: 1,1) - the intersection of i, j = 3
 
-b = i̅ • j (i absent, j present : 0,1) - the vector j minus the intersection
+b = i̅ • j (i absent, j present : 0,1) - the vector j minus the intersection = 2
 
-c = i • j̅ (i present, j absent: 1,0) - the vector i minus the intersection
+c = i • j̅ (i present, j absent: 1,0) - the vector i minus the intersection = 1
 
 d = i̅ • j̅ (i and j absent: 0,0) - all the other data points not included in of i,j
 
-Choi et al provide about 70 measure of similarity and distance, to showcase a few:
+Choi et al provide about 70 measures of similarity and distance, to showcase a few:
 
-Binary Cosine Similarity in OTU notation: a/SQRT((a+b)\*(a+c))
+Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
 
-Jaccard Similarity is: a/(a+b+c)
+Jaccard Similarity is: a/(a+b+c) = 3/(3 + 2 + 1) = 0.50
 
-Dice Similarity is: (2*a)/((2*a)+b+c)
+Dice Similarity is: (2\*a)/((2\*a)+b+c) = (2\*3)/((2\*3) + 2 + 1) = 0.66
 
 
 
