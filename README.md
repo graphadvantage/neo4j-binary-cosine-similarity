@@ -110,7 +110,7 @@ We can consider the two individuals to represent vectors of binary touches for e
 
 In the binary case, the math reduces to be quite simple.
 
-The dot product of i,j becomes (0*1)+(0*1)+(1*1)+(1*1)+(1*1)+(1*0) = 3, or the length of the intersections
+The dot product of i,j becomes (0\*1)+(0\*1)+(1\*1)+(1\*1)+(1\*1)+(1\*0) = 3, or the length of the intersection
 
 The sum of squares of i becomes (0^2)+(0^2)+(1^2)+(1^2)+(1^2)+(1^2) = 4, or the length of i
 
