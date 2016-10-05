@@ -120,7 +120,7 @@ The cosine similarity for (i,j) is  3 / SQRT(4*5) = 0.67
 
 You probably noticed the table row marked "OTU" - this refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity: http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf by Choi et al.
 
-
+The contingency table below describes this notation, which we can use to explore other similarity measures, such as Jaccard and Dice.
 
 *OTUs Expression of Binary Instances i and j*
 <table>
@@ -149,6 +149,25 @@ You probably noticed the table row marked "OTU" - this refers to "Operational Ta
   <td>n=a+b+c+d</td>
 </tr>
 </table>
+
+OTU notation describe how the vectors are related
+
+a = i • j  (i and j present: 1,1) - the intersection of i, j
+
+b = i̅ • j (i absent, j present : 0,1) - the vector j minus the intersection
+
+c = i • j̅ (i present, j absent: 1,0) - the vector i minus the intersection
+
+d = i̅ • j̅ (i and j absent: 0,0) - all the other data points not included in of i,j
+
+Choi et al provide about 70 measure of similarity and distance, to showcase a few:
+
+Binary Cosine Similarity in OTU notation: a/SQRT((a+b)\*(a+c))
+
+Jaccard Similarity is: a/(a+b+c)
+
+Dice Similarity is: (2*a)/((2*a)+b+c)
+
 
 
 ![neo4j-example-reco](https://cloud.githubusercontent.com/assets/5991751/19052701/a8a35e0e-896c-11e6-89b1-90e4fe480d15.png)
