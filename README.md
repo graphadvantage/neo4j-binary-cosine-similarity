@@ -31,24 +31,28 @@ The rating vectors are sorted by movie, and the cosine similarity is computed fo
 
 ![similarity-example-eq](https://cloud.githubusercontent.com/assets/5991751/19095933/b4148cae-8a4d-11e6-9855-66f61f8fb245.png)
 
-She then sets a (i1:Individual {name:"M.Hunger"})-[:SIMILARITY]->(i2:Individual {name:"M.Sherman"}) relationship and gives it a value of 0.86.
+She then sets a the similarity relationship (i1:Individual {name:"M.Hunger"})-[:SIMILARITY]->(i2:Individual {name:"M.Sherman"})  and gives it a value of 0.86. This is done for all individuals in the graph (full cartesian, so every individual has a [:SIMILARITY] to every other individual).
 
-Now movie recommendations can be produced by averaging the movie ratings of the most similar neighbors, and picking the highest rated movies that the target individual has not seen.
+Now movie recommendations can be produced by averaging the movie ratings of the most similar neighbors to the target individual, and picking the highest rated movies that the target individual has not seen.
 
 
 ##Binary Cosine Similarity: Marketing Recommendations
 
-In the case of marketing activities, we can use cosine similarity but we need to make some modifications to account for how marketing works.
+We'll follow Nicole's approach, but we need to make some modifications to account for how marketing works.
 
-First of all, there's no concept of "rating" - as we saw in Part 1, marketing activities either touch - or don't touch - an individual.
+First of all, there's no concept of "rating" - as we saw in Part 1, marketing activities either touch - or don't touch - an individual, meaning our scores are strictly binary.
 
-Second, the movie rating case is dealing with exact intersections, whereas for marketing if we compute similarity using the sequence of touches we have to account for intersecting and non intersecting parts of each vector pair.
+Second, the movie rating case is dealing with exact intersections of vectors. In the marketing use case we need to compute similarity from both the intersecting and non-intersecting lengths of each vector.
 
-Here's what we need to solve for - how similar are the touch histories of Nicklaus and Ibrahim?
+Graphically, here's what we need to solve for - how similar are the touch histories of Nicklaus and Ibrahim?
+
+You can see that between Nicklaus and Ibrahim there are 6 six activities, with 5 touching Nicklaus and 4 touching Ibrahim.  There are 2 activities that have touched Nicklaus that have not touched Ibrahim, and 1 marketing activity that has touched Ibrahim that has not touched Nicklaus.
 
 ![touch-vectors](https://cloud.githubusercontent.com/assets/5991751/19096766/f16a2b30-8a53-11e6-9e07-e88c1b75930e.png)
 
-We can consider the two individuals to represent vectors of binary touches for each activity, as shown in table below.
+We can consider the two individuals Ibrahim and Nicklaus as overlapping vectors of binary touches for each activity, as shown in table below.
+
+Let's call Ibrahim vector(i) and Nicklaus vector(j).
 
 <table style="textalign: center">
 <colgroup>
@@ -108,20 +112,21 @@ We can consider the two individuals to represent vectors of binary touches for e
 </table>
 
 
-In the binary case, the math reduces to be quite simple.
+In the binary case, our math reduces to the intersection and the lengths of each vector:
 
-The dot product of i,j becomes (0\*1)+(0\*1)+(1\*1)+(1\*1)+(1\*1)+(1\*0) = 3, or the length of the intersection
+The dot product i • j becomes (0\*1)+(0\*1)+(1\*1)+(1\*1)+(1\*1)+(1\*0) = 3, or the length of the intersection
 
 The sum of squares of i becomes (0^2)+(0^2)+(1^2)+(1^2)+(1^2)+(1^2) = 4, or the length of i
 
 The sum of squares of j becomes (1^2)+(1^2)+(1^2)+(1^2)+(1^2)+(0^2) = 5, or the length of j
 
-The cosine similarity for (i,j) is  3 / SQRT(4*5) = 0.67
-
+The binary cosine similarity Ibrahim (i) and Nicklaus (j) is then:  (3 / SQRT(4*5)) = 0.67
 
 ##Operational Taxonomic Unit (OTU) Notation
 
-You probably noticed the table row marked "OTU" - this refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity: http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf by Choi et al, 2010
+The table row marked "OTU" refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity by Choi et al, 2010 http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf  
+
+They provide 76 measures of binary similarity and distance written in OTU notation.
 
 The contingency table below describes this notation, which we can use to explore other similarity measures, such as Jaccard and Dice.
 
@@ -163,19 +168,19 @@ c = i • j̅ (i present, j absent: 1,0) - the vector i minus the intersection =
 
 d = i̅ • j̅ (i and j absent: 0,0) - all the other data points not included in (i,j)
 
-Choi et al, 2010 provide about 70 measures of similarity and distance written in OTU notation; to showcase a few using our example:
+In OTU notation (and using Ibrahim and Nicklaus) we get:
 
-Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
+Bianry Cosine Similarity: a/SQRT((a+b)\*(a+c)) = 3/SQRT((3 + 2)\*(3 + 1)) = 0.67
 
-Jaccard Similarity: a/(a+b+c) = 3/(3 + 2 + 1) = 0.50
+Binary Jaccard Similarity: a/(a+b+c) = 3/(3 + 2 + 1) = 0.50
 
-Dice Similarity: (2\*a)/((2\*a)+b+c) = (2\*3)/((2\*3) + 2 + 1) = 0.66
+Binary Dice Similarity: (2\*a)/((2\*a)+b+c) = (2\*3)/((2\*3) + 2 + 1) = 0.66
 
-In the next section we'll use OTU notation for computing similarity in our marketing graph
+In the next section we'll use OTU notation for computing binary cosine similarity in our marketing graph
 
-##Step 1. Adding Similarity to the Graph
+##Step 1. Adding Binary Cosine Similarity to the Graph
 
-Because all of our data is binary, and now that we understand how to compute binary cosine similarity using OTU, all we need to do is determine the lengths of a, b, c, d for each pair of individuals in the graph.
+Because all of our data is binary, and now that we understand how to compute binary cosine similarity using OTU notation, all we need to do is determine the lengths of a, b, c, d for each pair of individuals in the graph.
 
 1. First we COUNT all activities as vcnt
 
@@ -195,7 +200,7 @@ Because all of our data is binary, and now that we understand how to compute bin
 
 > d = vcnt - SIZE(v1) - SIZE(v2)
 
-6. We create the [:SIMILARITY] relationship and give it a value of a/SQRT((a+b)\*(a+c))
+Finally, we create the [:SIMILARITY] relationship each pair of individuals, and set the computed binary cosine similarity: (a/SQRT((a+b)\*(a+c))). This is done for all individuals in the graph (full cartesian, so every individual has a [:SIMILARITY] to every other individual).
 
 ```
 MATCH (:Activity)
@@ -279,9 +284,23 @@ session.close()
 
 ```
 
-##Step 2. Recommendations
+##Step 2. Making k-NN Recommendations using Binary Cosine Similarity and Last Touch Lead Attribution
+
+Lets take a look at Nicklaus's 4 nearest neighbors who have converted to leads:
 
 ![similarity](https://cloud.githubusercontent.com/assets/5991751/19054363/f896d038-8973-11e6-956e-c1014bedbe58.png)
+
+You can see that each neighbor (Ibrahim, Cyril, Sonny, Geovanni) has a [:SIMILARITY] relationship to Nicklaus, and - as we would expect - that these neighbors have been [:TOUCHED] by a number of the same (:Activity) nodes.
+
+Our goal is to search the nearest neighbors for (:Activity) nodes that are associated with converting the neighbor to a lead, but have not yet [:TOUCHED] Nicklaus.  We'll assume that the best picks will be from the neighbors with the highest cosine similarity score.
+
+This raises the question: Which of the similar neighbor's (:Activity) nodes do we want recommend?  
+
+Fortunately we've got this covered from Part 1 -- every neighbor's lead has already been [:ATTRIBUTED_TO]->(:Activity) with our attribution models. So all we have to do is pick the lead attribution model we want to use for our recommendations.  
+
+To keep things simple, we'll use our Last Touch attribution model, which gives 100% credit for lead conversion to the most recent (:Activity) that touched the individual.
+
+Here's the query:
 
 ```
 MATCH (a1:Activity)-[:TOUCHED]->(i1:Individual)-[s:SIMILARITY]->(n1:Individual)-[c:CONVERTED_TO]->(l:Lead)-[:ATTRIBUTED_TO {attributionModel: 'lastTouch'}]->(a2:Activity)
@@ -297,5 +316,7 @@ ORDER BY id(i1) ASC, avg_s DESC, cnt_nn DESC
 RETURN id(i1) AS targetId, i1.firstName AS firstName, i1.lastName AS lastName, av AS activityId, avg_s AS avgSimilarity, cnt_nn AS countNeighbors , msr AS simMeasure
 
 ```
+
+And here's the result:
 
 ![neo4j-example-reco](https://cloud.githubusercontent.com/assets/5991751/19052701/a8a35e0e-896c-11e6-89b1-90e4fe480d15.png)
