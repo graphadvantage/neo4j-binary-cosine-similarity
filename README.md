@@ -48,6 +48,7 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
 
 ![touch-vectors](https://cloud.githubusercontent.com/assets/5991751/19096766/f16a2b30-8a53-11e6-9e07-e88c1b75930e.png)
 
+We can consider the two individuals to represent vectors of binary touches for each activity, as shown in table below.
 
 <table style="textalign: center">
 <colgroup>
@@ -71,16 +72,6 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
     <th class="tg-baqh">&nbsp;&nbsp;Sum&nbsp;&nbsp;</th>
   </tr>
   <tr>
-    <td class="tg-baqh">Nicklaus (j)</td>
-    <td class="tg-baqh">1</td>
-    <td class="tg-baqh">1</td>
-    <td class="tg-baqh">1</td>
-    <td class="tg-baqh">1</td>
-    <td class="tg-baqh">1</td>
-    <td class="tg-baqh">0</td>
-    <td class="tg-baqh">a + b = 5</td>
-  </tr>
-  <tr>
     <td class="tg-baqh">Ibrahim (i)</td>
     <td class="tg-baqh">0</td>
     <td class="tg-baqh">0</td>
@@ -89,6 +80,16 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
     <td class="tg-baqh">1</td>
     <td class="tg-baqh">1</td>
     <td class="tg-baqh">a + c = 4</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">Nicklaus (j)</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">1</td>
+    <td class="tg-baqh">0</td>
+    <td class="tg-baqh">a + b = 5</td>
   </tr>
   <tr>
     <td class="tg-baqh">OTU</td>
@@ -105,6 +106,11 @@ Here's what we need to solve for - how similar are the touch histories of Nickla
     <td class="tg-baqh"></td>
   </tr>
 </table>
+
+
+What's interesting is that in the binary case the math reduces to be quite simple.
+
+The dot product of j,i becomes (*1)+(0)
 
 
 *OTUs Expression of Binary Instances i and j*
