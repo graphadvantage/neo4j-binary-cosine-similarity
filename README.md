@@ -187,9 +187,13 @@ Because all of our data is binary, and now that we understand how to compute bin
 
 5. We then derive a, b, c, d from the lengths of each vector
 > a = SIZE(v1xv2)
+
 > b = SIZE(v2) - SIZE(v1xv2)
+
 > c = SIZE(v1) - SIZE(v1xv2)
+
 > d = vcnt - SIZE(v1) - SIZE(v2)
+
 
 6. We create the [:SIMILARITY] relationship and give it a value of a/SQRT((a+b)\*(a+c))
 
