@@ -108,9 +108,18 @@ We can consider the two individuals to represent vectors of binary touches for e
 </table>
 
 
-What's interesting is that in the binary case the math reduces to be quite simple.
+In the binary case, the math reduces to be quite simple.
 
-The dot product of j,i becomes (*1)+(0)
+The dot product of i,j becomes (0*1)+(0*1)+(1*1)+(1*1)+(1*1)+(1*0) = 3, or the length of the intersections
+
+The sum of squares of i becomes (0^2)+(0^2)+(1^2)+(1^2)+(1^2)+(1^2) = 4, or the length of i
+
+The sum of squares of j becomes (1^2)+(1^2)+(1^2)+(1^2)+(1^2)+(0^2) = 5, or the length of j
+
+The cosine similarity for (i,j) is  3 / SQRT(4*5) = 0.67
+
+You probably noticed the table row marked "OTU" - this refers to "Operational Taxonomic Units" and is based on an excellent review of binary measures of similarity: http://www.iiisci.org/journal/CV$/sci/pdfs/GS315JG.pdf by Choi et al.
+
 
 
 *OTUs Expression of Binary Instances i and j*
