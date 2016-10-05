@@ -44,8 +44,67 @@ First of all, there's no concept of "rating" - as we saw in Part 1, marketing ac
 
 Second, the movie rating case is dealing with exact intersections, whereas for marketing if we compute similarity using the sequence of touches we have to account for intersecting and non intersecting parts of each vector pair.
 
+Here's what we need to solve for - how similar are the touch histories of Nicklaus and Ibrahim?
+
 ![touch-vectors](https://cloud.githubusercontent.com/assets/5991751/19096766/f16a2b30-8a53-11e6-9e07-e88c1b75930e.png)
 
+
+<table style="undefined;table-layout: fixed; width: 592px">
+<colgroup>
+<col style="width: 83px">
+<col style="width: 76px">
+<col style="width: 74px">
+<col style="width: 68px">
+<col style="width: 67px">
+<col style="width: 74px">
+<col style="width: 72px">
+<col style="width: 78px">
+</colgroup>
+  <tr>
+    <th>activityId</th>
+    <th>51</th>
+    <th>56903247</th>
+    <th>493</th>
+    <th>5</th>
+    <th>9962776</th>
+    <th>7</th>
+    <th>Sum</th>
+  </tr>
+  <tr>
+    <td>Nicklaus (j)</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>a + b = 5</td>
+  </tr>
+  <tr>
+    <td>Ibrahim (i)</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+    <td>a + c = 4</td>
+  </tr>
+  <tr>
+    <td>OTU</td>
+    <td colspan="2">b = i̅ • j</td>
+    <td colspan="3">a = i • j</td>
+    <td>c = i • j̅</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Sum</td>
+    <td colspan="2">b = 2</td>
+    <td colspan="3">a = 3</td>
+    <td>c = 1</td>
+    <td></td>
+  </tr>
+</table>
 
 
 *OTUs Expression of Binary Instances i and j*
