@@ -175,6 +175,24 @@ In the next section we'll use OTU notation for computing similarity in our marke
 
 ##Step 1. Adding Similarity to the Graph
 
+Because all of our data is binary, and now that we understand how to compute binary cosine similarity using OTU, all we need to do is determine the lengths of a, b, c, d for each pair of individuals in the graph.
+
+1. First we COUNT all activities as vcnt
+
+2. Next we COLLECT all intersecting activities as v1xv2
+
+3. Next we COLLECT all the activities for the first individual as v1
+
+4. Next we COLLECT all the activities for the second individual as v2
+
+5. We then derive a, b, c, d from the lengths of each vector
+> a = SIZE(v1xv2)
+> b = SIZE(v2) - SIZE(v1xv2)
+> c = SIZE(v1) - SIZE(v1xv2)
+> d = vcnt - SIZE(v1) - SIZE(v2)
+
+6. We create the [:SIMILARITY] relationship and give it a value of a/SQRT((a+b)\*(a+c))
+
 ```
 MATCH (:Activity)
 WITH COUNT(*) AS vcnt
