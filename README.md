@@ -216,7 +216,8 @@ SET s.similarity = a/SQRT((a+b)*(a+c)), s.measure = 'cosine' // cosine similarit
 
 ```
 
-The full Python script, using the Bolt driver
+The full Python script, using the Bolt driver.
+
 You'll notice I've included some other similarity and distance measures in OTU notation for you to experiment with.
 
 ```
